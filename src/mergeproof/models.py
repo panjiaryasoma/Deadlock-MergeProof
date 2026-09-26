@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .enums import (
     Advisory,
@@ -47,7 +47,14 @@ class Requirement(MergeProofModel):
     statement: str
     scope: list[str]
     criticality: RequirementCriticality
-    ambiguity: RequirementAmbiguity = RequirementAmbiguity.NONE
+    ambiguity: RequirementAmbiguity | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_explicit_null_ambiguity(cls, data: object) -> object:
+        if isinstance(data, dict) and "ambiguity" in data and data["ambiguity"] is None:
+            raise ValueError("ambiguity may be omitted but must not be null")
+        return data
 
 
 class Finding(MergeProofModel):

@@ -77,11 +77,40 @@ def test_canonical_payload_maps_to_typed_models() -> None:
     assert report.sources[0].source_type is SourceType.PRD
     assert report.sources[0].state is SourceState.ACTIVE
     assert report.requirements[0].criticality is RequirementCriticality.HIGH
-    assert report.requirements[0].ambiguity is RequirementAmbiguity.NONE
     assert report.findings[0].finding_class is FindingClass.CONFIRMED_ISSUE
     assert report.findings[0].finding_type is FindingType.BOUNDARY_CONDITION_DRIFT
     assert report.findings[0].evidence_grade is EvidenceGrade.DIRECT
     assert report.findings[0].severity is Severity.HIGH
+
+
+def test_missing_ambiguity_remains_unset_on_serialization() -> None:
+    report = MergeProofReport.model_validate(_valid_payload())
+
+    requirement = report.requirements[0]
+    dumped_requirement = requirement.model_dump(mode="json", exclude_unset=True)
+
+    assert requirement.ambiguity is None
+    assert "ambiguity" not in requirement.model_fields_set
+    assert "ambiguity" not in dumped_requirement
+
+
+def test_explicit_ambiguity_enum_is_preserved() -> None:
+    payload = _valid_payload()
+    payload["requirements"][0]["ambiguity"] = "MATERIAL"
+
+    report = MergeProofReport.model_validate(payload)
+    requirement = report.requirements[0]
+
+    assert requirement.ambiguity is RequirementAmbiguity.MATERIAL
+    assert requirement.model_dump(mode="json", exclude_unset=True)["ambiguity"] == "MATERIAL"
+
+
+def test_explicit_null_ambiguity_is_rejected() -> None:
+    payload = _valid_payload()
+    payload["requirements"][0]["ambiguity"] = None
+
+    with pytest.raises(ValidationError, match="ambiguity may be omitted but must not be null"):
+        MergeProofReport.model_validate(payload)
 
 
 def test_optional_report_fields_may_be_omitted() -> None:
@@ -92,6 +121,20 @@ def test_optional_report_fields_may_be_omitted() -> None:
 
     assert report.requirements == []
     assert report.human_override is None
+
+
+def test_exclude_unset_does_not_synthesize_omitted_optional_fields() -> None:
+    report = MergeProofReport.model_validate(_valid_payload())
+    dumped = report.model_dump(mode="json", exclude_unset=True)
+
+    requirement = dumped["requirements"][0]
+    finding = dumped["findings"][0]
+
+    assert "ambiguity" not in requirement
+    assert "requirement_ids" not in finding
+    assert "test_anchors" not in finding
+    assert "human_override" not in dumped
+    assert "source_anchors" in finding
 
 
 def test_unknown_fields_are_preserved_at_nested_levels() -> None:
