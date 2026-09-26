@@ -1,0 +1,11 @@
+requirement,schema_field,domain_rule,evaluation_cases,implementation_target
+FR-001,source.*,DR-008,"EVAL-009,EVAL-010,EVAL-022,EVAL-024",source_registry
+FR-002,"source.state,source.supersedes","DR-002,DR-003,DR-008","EVAL-009,EVAL-010,EVAL-024",source_resolver
+FR-003,requirement.*,DR-001,"EVAL-001,EVAL-015,EVAL-021",requirement_extractor
+FR-005,"finding.source_anchors,finding.repo_anchors,finding.test_anchors",DR-001,"EVAL-017,EVAL-018",evidence_validator
+FR-006,finding.finding_class,DR-001..DR-006,ALL,report_builder
+FR-008,finding.severity,severity_rubric,"EVAL-001,EVAL-013,EVAL-021",severity_rules
+FR-009,report.advisory,"DR-002,DR-003","EVAL-008,EVAL-009,EVAL-024",advisory_aggregator
+FR-010,N/A,authority_boundary,acceptance invariant,bob_mode_permissions
+FR-012,run metadata,N/A,integration-001,bob_subagents
+FR-015,all required fields,all,schema negative tests,validate_report.py

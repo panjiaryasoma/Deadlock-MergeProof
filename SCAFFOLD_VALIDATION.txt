@@ -1,0 +1,13 @@
+MergeProof scaffold static validation
+=====================================
+
+Python files checked: 10
+Python syntax failures: 0
+custom_modes.yaml parse: PASS
+
+
+Notes:
+- Dependency resolution was intentionally not run because this artifact environment
+  has no external package network access.
+- On your machine, run `uv sync --dev` first. That will also create `uv.lock`.
+- Then run `uv run pytest` and `uv run ruff check .`.

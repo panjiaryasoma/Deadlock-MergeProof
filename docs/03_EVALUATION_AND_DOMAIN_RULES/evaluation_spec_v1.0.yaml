@@ -1,0 +1,53 @@
+version: "1.0"
+objective: >
+  Evaluate whether MergeProof can detect seeded source-to-implementation/test drift
+  while avoiding unsupported findings and abstaining on ambiguous evidence.
+evaluation_layers:
+  - id: L1
+    name: schema_and_invariant_validation
+    deterministic: true
+  - id: L2
+    name: frozen_triage_acceptance
+    deterministic_expected_outputs: true
+  - id: L3
+    name: seeded_change_corpus
+    deterministic_labels: true
+    bob_assisted_analysis: true
+  - id: L4
+    name: human_review_time_comparison
+    deterministic: false
+    optional_for_mvp: true
+primary_metrics:
+  - name: confirmed_finding_precision
+    formula: "true_confirmed_findings / all_confirmed_findings"
+    target: ">= 0.90"
+  - name: seeded_defect_recall
+    formula: "detected_seeded_defects / all_seeded_defects"
+    target: ">= 0.85"
+  - name: source_anchor_validity
+    formula: "valid_anchors / all_reported_anchors"
+    target: ">= 0.95"
+guardrails:
+  - name: critical_miss_rate
+    target: "0 on frozen critical fixtures"
+  - name: unsupported_finding_rate
+    target: "<= 0.05"
+  - name: clean_case_false_positive_rate
+    target: "<= 0.10"
+  - name: silent_source_conflict_resolution
+    target: "0"
+abstention:
+  required_cases:
+    - authoritative_source_conflict
+    - materially_ambiguous_requirement
+    - missing_required_evidence
+run_protocol:
+  repeated_runs_per_case: 1
+  note: "Use repeat runs only if time permits; do not fabricate stability numbers."
+  record:
+    - repo_commit_sha
+    - changed_files
+    - source_ids
+    - bob_mode_version
+    - skill_version
+    - report_schema_version

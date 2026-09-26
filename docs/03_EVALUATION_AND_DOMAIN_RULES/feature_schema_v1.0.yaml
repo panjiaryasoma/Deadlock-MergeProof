@@ -1,0 +1,104 @@
+version: "1.0"
+entities:
+  source:
+    required:
+      - source_id
+      - source_type
+      - location
+      - authority
+      - state
+      - scope
+    fields:
+      source_id: string
+      source_type:
+        enum: [MACHINE_READABLE_CONTRACT, CHANGE_ACCEPTANCE_CRITERIA, ADR, PRD, REPOSITORY_DOCUMENTATION, ISSUE_OR_PR_TEXT, EXTERNAL_GUIDANCE]
+      location: string
+      version: [string, null]
+      effective_at: [string, null]
+      authority: string
+      state:
+        enum: [ACTIVE, SUPERSEDED, CONFLICTING, UNKNOWN]
+      supersedes: [array, null]
+      scope: array
+      content_hash: [string, null]
+  requirement:
+    required:
+      - requirement_id
+      - source_id
+      - statement
+      - scope
+      - criticality
+    fields:
+      requirement_id: string
+      source_id: string
+      statement: string
+      scope: array
+      criticality:
+        enum: [CRITICAL, HIGH, MEDIUM, LOW]
+      ambiguity:
+        enum: [NONE, MINOR, MATERIAL]
+  anchor:
+    required: [artifact, locator]
+    fields:
+      artifact: string
+      locator: string
+      excerpt: [string, null]
+      commit_sha: [string, null]
+  finding:
+    required:
+      - finding_id
+      - finding_class
+      - finding_type
+      - title
+      - evidence_grade
+      - severity
+      - repo_anchors
+      - rationale
+    fields:
+      finding_id: string
+      finding_class:
+        enum: [CONFIRMED_ISSUE, POTENTIAL_RISK, SPEC_AMBIGUITY, NO_ISSUE]
+      finding_type:
+        enum:
+          - REQUIREMENT_IMPLEMENTATION_MISMATCH
+          - API_CONTRACT_DRIFT
+          - BOUNDARY_CONDITION_DRIFT
+          - ENUM_OR_SCHEMA_DRIFT
+          - MISSING_ACCEPTANCE_TEST
+          - SOURCE_CONFLICT
+          - STALE_SOURCE
+          - UNSUPPORTED_BEST_PRACTICE_CLAIM
+          - HARMLESS_REFACTOR
+      requirement_ids: array
+      title: string
+      evidence_grade:
+        enum: [DIRECT, CORROBORATED, INFERRED, INSUFFICIENT]
+      severity:
+        enum: [CRITICAL, HIGH, MEDIUM, LOW, NONE]
+      source_anchors: array
+      repo_anchors: array
+      test_anchors: array
+      rationale: string
+      suggested_human_check: [string, null]
+  report:
+    required:
+      - report_version
+      - run_id
+      - advisory
+      - repository
+      - sources
+      - findings
+      - generated_at
+    fields:
+      report_version: string
+      run_id: string
+      advisory:
+        enum: [PASS, REVIEW_REQUIRED, ABSTAIN]
+      repository:
+        object:
+          required: [commit_sha, changed_files]
+      sources: array
+      requirements: array
+      findings: array
+      generated_at: string
+      human_override: [object, null]

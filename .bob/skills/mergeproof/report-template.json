@@ -1,0 +1,31 @@
+{
+  "report_version": "0.1",
+  "run_id": "replace-me",
+  "advisory": "PASS|REVIEW_REQUIRED|ABSTAIN",
+  "scope": {
+    "changed_files": [],
+    "notes": ""
+  },
+  "sources": [
+    {
+      "source_id": "SRC-001",
+      "path": "docs/example.md",
+      "state": "ACTIVE|SUPERSEDED|CONFLICTING|UNKNOWN",
+      "authority": "AUTHORITATIVE|NON_AUTHORITATIVE|UNRESOLVED",
+      "supersedes": []
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "CONFIRMED_ISSUE|POTENTIAL_RISK|SPEC_AMBIGUITY|NO_ISSUE",
+      "evidence_grade": "DIRECT|CORROBORATED|INFERRED|INSUFFICIENT",
+      "severity": "UNSPECIFIED_BY_PROJECT",
+      "source_evidence": [],
+      "repository_evidence": [],
+      "impact": "",
+      "human_check_required": ""
+    }
+  ],
+  "unresolved_questions": []
+}

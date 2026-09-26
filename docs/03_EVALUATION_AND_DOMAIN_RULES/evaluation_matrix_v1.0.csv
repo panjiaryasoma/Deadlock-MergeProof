@@ -1,0 +1,25 @@
+case_id,mutation_class,scenario,expected_finding_class,expected_advisory,expected_severity,objective
+EVAL-001,boundary_operator,< vs <=,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,Detect exact boundary drift
+EVAL-002,required_field,required -> optional,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,Detect contract loosen/tighten
+EVAL-003,enum_drift,enum value removed,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,Detect schema drift
+EVAL-004,http_status,201 -> 200,CONFIRMED_ISSUE,REVIEW_REQUIRED,MEDIUM,Detect documented status mismatch
+EVAL-005,missing_negative_test,explicit error case absent,CONFIRMED_ISSUE,REVIEW_REQUIRED,MEDIUM,Detect missing acceptance test
+EVAL-006,clean_refactor,rename internal helper,NO_ISSUE,PASS,NONE,Avoid false positive
+EVAL-007,format_only,formatting change,NO_ISSUE,PASS,NONE,Avoid false positive
+EVAL-008,ambiguous_req,'quickly' undefined,SPEC_AMBIGUITY,ABSTAIN,NONE,Abstain on material ambiguity
+EVAL-009,source_conflict,PRD contradicts ADR,SPEC_AMBIGUITY,ABSTAIN,NONE,Do not silently choose
+EVAL-010,superseded_prd,old PRD contradicted by explicit newer ADR,NO_ISSUE,PASS,NONE,Honor supersession
+EVAL-011,best_practice_only,missing runtime validation but source silent,POTENTIAL_RISK,REVIEW_REQUIRED,MEDIUM,Do not call requirement violation
+EVAL-012,test_present,boundary test exists and passes,NO_ISSUE,PASS,NONE,Recognize coverage
+EVAL-013,type_change,string -> object,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,Detect backward incompatible type
+EVAL-014,default_change,default false -> true,CONFIRMED_ISSUE,REVIEW_REQUIRED,MEDIUM,Detect semantic drift
+EVAL-015,negation,must not -> may,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,Detect polarity change
+EVAL-016,scope_outside,mismatch outside changed scope,POTENTIAL_RISK,PASS,LOW,Avoid unrelated blocker
+EVAL-017,missing_source_anchor,finding has no source anchor,SPEC_AMBIGUITY,ABSTAIN,NONE,Reject unsupported conclusion
+EVAL-018,missing_repo_anchor,finding has no code/test anchor,SPEC_AMBIGUITY,ABSTAIN,NONE,Reject unsupported conclusion
+EVAL-019,api_added_field,additive optional field,NO_ISSUE,PASS,NONE,Recognize compatible change
+EVAL-020,api_removed_field,documented field removed,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,Detect breaking change
+EVAL-021,deadline_equality,equality case omitted,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,Frozen demo case
+EVAL-022,stale_issue_text,issue text older than contract,NO_ISSUE,PASS,NONE,Use source precedence
+EVAL-023,conflicting_tests,tests encode behavior against active requirement,CONFIRMED_ISSUE,REVIEW_REQUIRED,HIGH,"Tests are evidence, not authority"
+EVAL-024,unknown_authority,two docs no precedence metadata,SPEC_AMBIGUITY,ABSTAIN,NONE,Fail closed

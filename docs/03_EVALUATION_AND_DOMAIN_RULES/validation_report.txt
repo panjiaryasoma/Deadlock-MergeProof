@@ -1,0 +1,47 @@
+MERGEPROOF PREPRODUCTION VALIDATION REPORT
+========================================
+generated_at=2026-09-26T06:03:19.409387+00:00
+checks_total=36
+checks_passed=36
+checks_failed=0
+
+[PASS] root README exists
+[PASS] required file: 01_DISCOVERY_AND_PROBLEM/PROBLEM_BRIEF.md
+[PASS] required file: 01_DISCOVERY_AND_PROBLEM/DISCOVERY_REAL_WORLD_EVIDENCE.md
+[PASS] required file: 02_PRODUCT_REQUIREMENTS/SIMPLE_PRD.md
+[PASS] required file: 03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml
+[PASS] required file: 03_EVALUATION_AND_DOMAIN_RULES/evaluation_matrix_v1.0.csv
+[PASS] required file: 03_EVALUATION_AND_DOMAIN_RULES/evaluation_spec_v1.0.yaml
+[PASS] required file: 03_EVALUATION_AND_DOMAIN_RULES/feature_schema_v1.0.yaml
+[PASS] required file: 03_EVALUATION_AND_DOMAIN_RULES/feature_traceability_v1.0.csv
+[PASS] required file: 03_EVALUATION_AND_DOMAIN_RULES/SOURCE_EVALUATION_SUITE_001-030.md
+[PASS] required file: 03_EVALUATION_AND_DOMAIN_RULES/SOURCE_SCHEMA.md
+[PASS] required file: 05_PREPRODUCTION/02_TRIAGE_ACCEPTANCE/TRIAGE_EVALUATION_SUITE.md
+[PASS] required file: 06_IMPLEMENTATION_HANDOFF/PRODUCTION_START_GATE_v1.0_READY.md
+[PASS] enum token consistent: PASS
+[PASS] enum token consistent: REVIEW_REQUIRED
+[PASS] enum token consistent: ABSTAIN
+[PASS] enum token consistent: CONFIRMED_ISSUE
+[PASS] enum token consistent: POTENTIAL_RISK
+[PASS] enum token consistent: SPEC_AMBIGUITY
+[PASS] enum token consistent: NO_ISSUE
+[PASS] source suite has 30 cases
+[PASS] triage suite has 8 cases
+[PASS] evaluation matrix >= 20 cases
+[PASS] human-only authority appears in PRD
+[PASS] no training dataset decision explicit
+[PASS] YAML parse: 03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml :: parse ok
+[PASS] YAML parse: 03_EVALUATION_AND_DOMAIN_RULES/evaluation_spec_v1.0.yaml :: parse ok
+[PASS] YAML parse: 03_EVALUATION_AND_DOMAIN_RULES/feature_schema_v1.0.yaml :: parse ok
+[PASS] YAML parse: 04_DATA_STRATEGY/SYNTHETIC_DATA_GENERATION_SPEC.yaml :: parse ok
+[PASS] YAML parse: 05_PREPRODUCTION/01_CONTRACTS_ACTIVE/FEATURE_SCHEMA_FINAL.yaml :: parse ok
+[PASS] YAML parse: 05_PREPRODUCTION/03_INTEGRATION_001/POLICY_FIXTURE.yaml :: parse ok
+[PASS] YAML parse: 05_PREPRODUCTION/03_INTEGRATION_001/EXPECTED_TRIAGE_OUTPUT.yaml :: parse ok
+[PASS] YAML parse: 05_PREPRODUCTION/03_INTEGRATION_001/EXPECTED_SCORES.yaml :: parse ok
+[PASS] YAML parse: 05_PREPRODUCTION/03_INTEGRATION_001/EXPECTED_GATE_RESULTS.yaml :: parse ok
+[PASS] CSV parse: 03_EVALUATION_AND_DOMAIN_RULES/evaluation_matrix_v1.0.csv :: 24 rows
+[PASS] CSV parse: 03_EVALUATION_AND_DOMAIN_RULES/feature_traceability_v1.0.csv :: 10 rows
+
+OVERALL=PASS
+
+NOTE: This validates preproduction artifact consistency, not IBM Bob runtime behavior.

@@ -1,0 +1,7 @@
+case_id: INTEGRATION-001
+metrics:
+  seeded_defects: 2
+  expected_detected: 2
+  expected_false_positives: 0
+  expected_anchor_validity: 1.0
+note: "No LLM confidence score is expected or accepted."

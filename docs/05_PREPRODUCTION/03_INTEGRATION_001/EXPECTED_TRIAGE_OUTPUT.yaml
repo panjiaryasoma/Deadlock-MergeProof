@@ -1,0 +1,11 @@
+case_id: INTEGRATION-001
+advisory: REVIEW_REQUIRED
+findings:
+  - finding_class: CONFIRMED_ISSUE
+    finding_type: BOUNDARY_CONDITION_DRIFT
+    severity: HIGH
+    evidence_grade: DIRECT
+  - finding_class: CONFIRMED_ISSUE
+    finding_type: MISSING_ACCEPTANCE_TEST
+    severity: MEDIUM
+    evidence_grade: DIRECT

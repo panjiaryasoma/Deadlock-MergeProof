@@ -1,0 +1,32 @@
+version: "1.0"
+base_fixture:
+  domain: "submission deadline / todo API hybrid demo"
+  size: "small"
+  languages: ["Python or TypeScript; choose one at implementation freeze"]
+mutation_operators:
+  - id: MUT-BOUNDARY
+    examples: ["< -> <=", "> -> >=", "== -> !="]
+  - id: MUT-REQUIRED
+    examples: ["required -> optional", "optional -> required"]
+  - id: MUT-ENUM
+    examples: ["remove value", "rename value", "add incompatible value"]
+  - id: MUT-STATUS
+    examples: ["201 -> 200", "404 -> 200"]
+  - id: MUT-DEFAULT
+    examples: ["false -> true", "null -> non-null"]
+  - id: MUT-NEGATION
+    examples: ["must -> must not", "can -> cannot"]
+  - id: MUT-MISSING-TEST
+    examples: ["remove equality boundary test", "remove negative case"]
+  - id: MUT-STALE-SOURCE
+    examples: ["older PRD conflicts with newer ADR"]
+  - id: MUT-CONFLICT
+    examples: ["two active sources disagree"]
+  - id: MUT-NOOP
+    examples: ["rename private helper", "format only"]
+generation_rules:
+  one_primary_mutation_per_case: true
+  explicit_ground_truth_required: true
+  source_and_code_anchors_required: true
+  no_real_secrets_or_credentials: true
+  deterministic_seed_ids: true

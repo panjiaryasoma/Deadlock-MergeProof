@@ -1,0 +1,34 @@
+from enum import StrEnum
+
+
+class Advisory(StrEnum):
+    PASS = "PASS"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+    ABSTAIN = "ABSTAIN"
+
+
+class FindingClass(StrEnum):
+    CONFIRMED_ISSUE = "CONFIRMED_ISSUE"
+    POTENTIAL_RISK = "POTENTIAL_RISK"
+    SPEC_AMBIGUITY = "SPEC_AMBIGUITY"
+    NO_ISSUE = "NO_ISSUE"
+
+
+class EvidenceGrade(StrEnum):
+    DIRECT = "DIRECT"
+    CORROBORATED = "CORROBORATED"
+    INFERRED = "INFERRED"
+    INSUFFICIENT = "INSUFFICIENT"
+
+
+class SourceState(StrEnum):
+    ACTIVE = "ACTIVE"
+    SUPERSEDED = "SUPERSEDED"
+    CONFLICTING = "CONFLICTING"
+    UNKNOWN = "UNKNOWN"
+
+
+class SourceAuthority(StrEnum):
+    AUTHORITATIVE = "AUTHORITATIVE"
+    NON_AUTHORITATIVE = "NON_AUTHORITATIVE"
+    UNRESOLVED = "UNRESOLVED"

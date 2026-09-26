@@ -1,0 +1,12 @@
+case_id: INTEGRATION-001
+sources:
+  - source_id: SRC-PRD-001
+    source_type: PRD
+    state: ACTIVE
+    authority: product_contract
+    requirement:
+      id: REQ-DEADLINE-001
+      statement: "A submission is expired when evaluated_at >= submission_deadline."
+changed_scope:
+  - src/deadline.py
+  - tests/test_deadline.py

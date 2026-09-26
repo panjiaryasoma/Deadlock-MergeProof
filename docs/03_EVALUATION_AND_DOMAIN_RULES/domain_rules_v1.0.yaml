@@ -1,0 +1,102 @@
+version: "1.0"
+product: "MergeProof"
+authority_boundary:
+  merge_authority: "HUMAN_ONLY"
+  autonomous_actions_forbidden:
+    - merge
+    - approve_pr
+    - reject_pr
+    - push
+    - commit
+    - edit_production_code
+advisories:
+  allowed: [PASS, REVIEW_REQUIRED, ABSTAIN]
+finding_classes:
+  allowed: [CONFIRMED_ISSUE, POTENTIAL_RISK, SPEC_AMBIGUITY, NO_ISSUE]
+evidence_grades:
+  allowed: [DIRECT, CORROBORATED, INFERRED, INSUFFICIENT]
+severity:
+  allowed: [CRITICAL, HIGH, MEDIUM, LOW, NONE]
+source_precedence:
+  explicit_supersession_wins: true
+  fallback:
+    - MACHINE_READABLE_CONTRACT
+    - CHANGE_ACCEPTANCE_CRITERIA
+    - ADR
+    - PRD
+    - REPOSITORY_DOCUMENTATION
+    - ISSUE_OR_PR_TEXT
+    - EXTERNAL_GUIDANCE
+rules:
+  - id: DR-001
+    name: no_evidence_no_confirmed_issue
+    if: "finding_class == CONFIRMED_ISSUE"
+    require:
+      evidence_grade: [DIRECT, CORROBORATED]
+      min_source_anchors: 1
+      min_repo_anchors: 1
+  - id: DR-002
+    name: ambiguity_abstains
+    if: "material_ambiguity == true"
+    then:
+      advisory: ABSTAIN
+  - id: DR-003
+    name: source_conflict_abstains
+    if: "authoritative_source_conflict == true and in_scope == true"
+    then:
+      advisory: ABSTAIN
+  - id: DR-004
+    name: best_practice_not_requirement
+    if: "only_external_guidance_supports_claim == true"
+    forbid:
+      finding_class: CONFIRMED_ISSUE
+  - id: DR-005
+    name: no_issue_has_no_severity
+    if: "finding_class == NO_ISSUE"
+    then:
+      severity: NONE
+  - id: DR-006
+    name: clean_refactor_not_blocking
+    if: "behavioral_contract_changed == false and tests_green == true and no_requirement_drift == true"
+    then:
+      finding_class: NO_ISSUE
+  - id: DR-007
+    name: missing_required_test
+    if: "explicit_acceptance_boundary_exists == true and matching_test_missing == true"
+    then:
+      finding_type: MISSING_ACCEPTANCE_TEST
+      advisory: REVIEW_REQUIRED
+  - id: DR-008
+    name: stale_source_ignored_when_explicitly_superseded
+    if: "source_state == SUPERSEDED"
+    then:
+      eligible_as_authoritative_source: false
+  - id: DR-009
+    name: human_override_recorded
+    if: "human_overrides_advisory == true"
+    require:
+      override_reason: "non_empty"
+  - id: DR-010
+    name: no_fake_probability
+    forbid_fields:
+      - llm_confidence_percent
+      - probability_correct
+severity_rubric:
+  CRITICAL:
+    any:
+      - "confirmed violation can cause destructive or irreversible action in changed scope"
+      - "confirmed auth/security boundary bypass explicitly defined by contract"
+  HIGH:
+    any:
+      - "confirmed backward-incompatible API/contract change"
+      - "confirmed deadline/eligibility/financial boundary change"
+  MEDIUM:
+    any:
+      - "confirmed functional mismatch with bounded impact"
+      - "explicit acceptance scenario missing from tests"
+  LOW:
+    any:
+      - "non-blocking maintainability or observability risk"
+  NONE:
+    any:
+      - "no issue"

@@ -1,0 +1,8 @@
+case_id: INTEGRATION-001
+gates:
+  schema_valid: true
+  evidence_complete: true
+  source_conflict: false
+  material_ambiguity: false
+  authority_boundary_respected: true
+  final_advisory: REVIEW_REQUIRED

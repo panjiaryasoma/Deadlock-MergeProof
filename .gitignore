@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+dist/
+build/
+*.egg-info/
+reports/*.json
+reports/*.md
+!reports/.gitkeep
+!reports/README.md
+.DS_Store
+Thumbs.db
