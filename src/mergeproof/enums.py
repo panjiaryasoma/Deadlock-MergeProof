@@ -7,18 +7,14 @@ class Advisory(StrEnum):
     ABSTAIN = "ABSTAIN"
 
 
-class FindingClass(StrEnum):
-    CONFIRMED_ISSUE = "CONFIRMED_ISSUE"
-    POTENTIAL_RISK = "POTENTIAL_RISK"
-    SPEC_AMBIGUITY = "SPEC_AMBIGUITY"
-    NO_ISSUE = "NO_ISSUE"
-
-
-class EvidenceGrade(StrEnum):
-    DIRECT = "DIRECT"
-    CORROBORATED = "CORROBORATED"
-    INFERRED = "INFERRED"
-    INSUFFICIENT = "INSUFFICIENT"
+class SourceType(StrEnum):
+    MACHINE_READABLE_CONTRACT = "MACHINE_READABLE_CONTRACT"
+    CHANGE_ACCEPTANCE_CRITERIA = "CHANGE_ACCEPTANCE_CRITERIA"
+    ADR = "ADR"
+    PRD = "PRD"
+    REPOSITORY_DOCUMENTATION = "REPOSITORY_DOCUMENTATION"
+    ISSUE_OR_PR_TEXT = "ISSUE_OR_PR_TEXT"
+    EXTERNAL_GUIDANCE = "EXTERNAL_GUIDANCE"
 
 
 class SourceState(StrEnum):
@@ -28,7 +24,61 @@ class SourceState(StrEnum):
     UNKNOWN = "UNKNOWN"
 
 
+class RequirementCriticality(StrEnum):
+    CRITICAL = "CRITICAL"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+
+
+class RequirementAmbiguity(StrEnum):
+    NONE = "NONE"
+    MINOR = "MINOR"
+    MATERIAL = "MATERIAL"
+
+
+class FindingClass(StrEnum):
+    CONFIRMED_ISSUE = "CONFIRMED_ISSUE"
+    POTENTIAL_RISK = "POTENTIAL_RISK"
+    SPEC_AMBIGUITY = "SPEC_AMBIGUITY"
+    NO_ISSUE = "NO_ISSUE"
+
+
+class FindingType(StrEnum):
+    REQUIREMENT_IMPLEMENTATION_MISMATCH = "REQUIREMENT_IMPLEMENTATION_MISMATCH"
+    API_CONTRACT_DRIFT = "API_CONTRACT_DRIFT"
+    BOUNDARY_CONDITION_DRIFT = "BOUNDARY_CONDITION_DRIFT"
+    ENUM_OR_SCHEMA_DRIFT = "ENUM_OR_SCHEMA_DRIFT"
+    MISSING_ACCEPTANCE_TEST = "MISSING_ACCEPTANCE_TEST"
+    SOURCE_CONFLICT = "SOURCE_CONFLICT"
+    STALE_SOURCE = "STALE_SOURCE"
+    UNSUPPORTED_BEST_PRACTICE_CLAIM = "UNSUPPORTED_BEST_PRACTICE_CLAIM"
+    HARMLESS_REFACTOR = "HARMLESS_REFACTOR"
+
+
+class EvidenceGrade(StrEnum):
+    DIRECT = "DIRECT"
+    CORROBORATED = "CORROBORATED"
+    INFERRED = "INFERRED"
+    INSUFFICIENT = "INSUFFICIENT"
+
+
+class Severity(StrEnum):
+    CRITICAL = "CRITICAL"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+    NONE = "NONE"
+
+
 class SourceAuthority(StrEnum):
+    """Temporary compatibility enum for pre-Block-2 downstream code.
+
+    The canonical source contract models authority as a project-specific string.
+    This enum is not used by the Block 2A Source model and should disappear when
+    downstream validator/aggregator compatibility is cleaned up in Block 2E.
+    """
+
     AUTHORITATIVE = "AUTHORITATIVE"
     NON_AUTHORITATIVE = "NON_AUTHORITATIVE"
     UNRESOLVED = "UNRESOLVED"
