@@ -33,8 +33,8 @@ Evaluate whether the unresolved condition is material to the advisory.
 Examples:
 - a non-material runtime uncertainty outside evaluated scope may remain disclosed
   without forcing ABSTAIN;
-- absence of a project severity rubric does not force ABSTAIN; use
-  `UNSPECIFIED_BY_PROJECT`;
+- a severity-contract gap is not itself proof of a requirement violation; preserve
+  it as unresolved state and do not invent an out-of-schema severity;
 - an unsupported finding removed by self-audit does not force ABSTAIN unless its
   removal reveals a new material evidence gap.
 
