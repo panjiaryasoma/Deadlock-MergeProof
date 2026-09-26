@@ -21,6 +21,15 @@ It must:
 If no valid advisory state from `conflict-abstention` exists, do not invent one.
 Report the workflow state as incomplete.
 
+## Canonical report contract
+
+The frozen active implementation contract is:
+
+`docs/05_PREPRODUCTION/01_CONTRACTS_ACTIVE/FEATURE_SCHEMA_FINAL.yaml`
+
+Do not define or maintain a parallel report schema inside this skill.
+Detailed executable schema validation belongs to production Block 2.
+
 ## Human-readable output order
 
 1. Scope
