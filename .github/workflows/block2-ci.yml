@@ -41,6 +41,12 @@ jobs:
       - name: Prepare isolated Bob demo workspace
         run: uv run python scripts/prepare_demo_workspace.py
 
+      - name: Prepare frozen TRIAGE workspaces
+        run: uv run python scripts/prepare_triage_workspace.py --all
+
+      - name: Verify Block 5 TRIAGE harness
+        run: uv run pytest -q tests/test_block5_triage.py
+
       - name: Regenerate schema
         run: uv run python scripts/generate_schema.py
 
