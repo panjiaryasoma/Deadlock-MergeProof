@@ -1,0 +1,21 @@
+case_id: TRIAGE-008
+skill_version: "1.0.2"
+measurement_status: FAIL
+semantic_tuple_match: true
+expected:
+  finding_class: NO_ISSUE
+  finding_type: STALE_SOURCE
+  severity: NONE
+  advisory: PASS
+observed_primary:
+  finding_class: NO_ISSUE
+  finding_type: STALE_SOURCE
+  severity: NONE
+  advisory: PASS
+transport_contract:
+  pass: false
+  reason: "Bob emitted user-visible workflow reasoning before the canonical JSON object."
+notes:
+  - "Explicit supersession was resolved correctly."
+  - "The stale source and active superseding source were both cited."
+  - "Implementation and equality-boundary test align with the active ADR."
