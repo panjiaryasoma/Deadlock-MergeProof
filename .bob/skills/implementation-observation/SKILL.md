@@ -1,25 +1,31 @@
 ---
 name: implementation-observation
-description: Determine what the implementation actually does, including edge cases, without mixing observation with expected behavior or remediation advice.
+description: Determine what changed implementation actually does, including edge cases, without mixing observation with expected behavior or remediation advice.
 ---
 
 # Implementation Observation
 
-Describe:
-- control flow
-- validation behavior
-- runtime transformations
-- error behavior
-- state mutation
-- API responses
-- boundary behavior
+Inspect only the requested changed-file scope unless a directly referenced dependency
+is required to understand behavior.
 
-Cite exact repository locations.
+Describe:
+- control flow;
+- validation behavior;
+- runtime transformations;
+- error behavior;
+- state mutation;
+- API responses;
+- boundary behavior.
+
+For every material observation provide a repository anchor with:
+- workspace-root-relative artifact path;
+- stable locator such as function/class/symbol and line when visible;
+- short excerpt only when needed.
 
 Do not:
-- call behavior wrong before comparing to authority
-- assign severity
-- recommend a fix
-- convert best practice into expected behavior
+- call behavior wrong before comparing it to authority;
+- assign severity;
+- recommend a fix;
+- convert best practice into expected behavior.
 
 Mark unverified runtime/framework claims as `NEEDS_RUNTIME_TEST`.

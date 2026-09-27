@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = REPO_ROOT / "build" / "demo-workspace"
 MARKER = ".mergeproof-demo-workspace"
+RUN_CONTEXT = "MERGEPROOF_RUN_CONTEXT.yaml"
 
 COPY_PATHS = (
     Path(".bob"),
@@ -15,6 +17,20 @@ COPY_PATHS = (
     Path("docs/05_PREPRODUCTION/01_CONTRACTS_ACTIVE/FEATURE_SCHEMA_FINAL.yaml"),
     Path("schemas/mergeproof_report.schema.json"),
 )
+
+
+def _repository_commit_sha() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    commit_sha = result.stdout.strip()
+    if result.returncode != 0 or not commit_sha:
+        raise RuntimeError("Unable to resolve repository commit SHA for demo run context.")
+    return commit_sha
 
 
 def _reset_output(output: Path) -> None:
@@ -40,6 +56,18 @@ def _copy_path(source: Path, output: Path) -> None:
         shutil.copy2(absolute_source, destination)
 
 
+def _write_run_context(output: Path) -> None:
+    commit_sha = _repository_commit_sha()
+    content = (
+        'workspace_version: "1.0"\n'
+        f'repository_commit_sha: "{commit_sha}"\n'
+        'case_descriptor: "demo/case.yaml"\n'
+        'report_schema: "schemas/mergeproof_report.schema.json"\n'
+        'domain_rules: "docs/03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml"\n'
+    )
+    (output / RUN_CONTEXT).write_text(content, encoding="utf-8")
+
+
 def prepare_workspace(output: Path) -> Path:
     output = output.resolve()
     _reset_output(output)
@@ -49,6 +77,7 @@ def prepare_workspace(output: Path) -> Path:
     for source in COPY_PATHS:
         _copy_path(source, output)
 
+    _write_run_context(output)
     return output
 
 

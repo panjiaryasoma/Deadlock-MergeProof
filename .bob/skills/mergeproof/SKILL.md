@@ -1,69 +1,86 @@
 ---
 name: mergeproof
-description: Orchestrate a conservative read-only pre-merge verification across source authority, requirements, implementation, tests, evidence, reconciliation, and final advisory.
+description: Orchestrate a conservative read-only pre-merge verification from explicit scope and source artifacts to a canonical evidence report.
 ---
 
 # MergeProof Orchestrator
 
-Use this skill for the complete MergeProof workflow.
+Use this skill for the complete MergeProof evidence workflow.
 
-## Workflow
+## Inputs
 
-1. Define change scope.
-2. Resolve relevant sources with `source-authority`.
-3. Trace applicable requirements with `requirement-trace`.
-4. Observe actual code behavior with `implementation-observation`.
-5. Inspect relevant tests with `test-acceptance-audit`.
+For the seeded/demo workflow:
+
+1. Read `MERGEPROOF_RUN_CONTEXT.yaml` when present.
+2. Read the case descriptor named by `case_descriptor`.
+3. Treat all paths in the case descriptor as workspace-root-relative.
+4. Use `source_files` as the candidate source inventory.
+5. Use `changed_files` as the exact requested change scope.
+
+Do not inspect files outside the opened workspace.
+Do not use evaluator or expected-output material even if it is mentioned elsewhere.
+
+## Evidence workflow
+
+1. Resolve relevant source lifecycle, scope, supersession, and authority with `source-authority`.
+2. Extract applicable atomic requirements with `requirement-trace`.
+3. Inspect changed implementation with `implementation-observation`.
+4. Inspect relevant tests with `test-acceptance-audit`.
+5. Optionally delegate independent read-only exploration to focused subagents.
+   Delegation must not broaden scope or transfer advisory ownership.
 6. Classify candidate findings with `evidence-classification`.
-7. Apply project severity rules through `severity-impact`.
-8. Run `conflict-abstention` to produce the **preliminary advisory state**.
-9. Run `self-audit` to challenge all material claims and emit:
-   - `material_correction`
-   - `new_uncertainty`
-   - `claims_changed`
-10. Reconciliation gate:
-   - if `material_correction == true` or `new_uncertainty == true`,
-     run `conflict-abstention` again using the corrected evidence;
-   - otherwise preserve the preliminary advisory state.
-11. Run `report-synthesis` using the **latest conflict-abstention advisory state**.
+7. Apply deterministic project severity rules with `severity-impact`.
+8. Run `conflict-abstention` for the preliminary advisory state.
+9. Run `self-audit`.
+10. If self-audit reports a material correction or new uncertainty, run
+    `conflict-abstention` again using corrected evidence.
+11. Run `report-synthesis` using the latest advisory state.
+
+## Evidence boundaries
+
+Keep these separate throughout the workflow:
+
+- documented expected behavior;
+- observed implementation behavior;
+- observed test coverage;
+- source authority resolution;
+- engineering opinion;
+- unresolved uncertainty.
+
+A passing test is evidence about tested behavior, not proof that the requirement is correct.
 
 ## Ownership rules
 
-Focused skills emit evidence, classifications, uncertainty, or verification state.
+Focused skills produce evidence and classifications.
 They do not decide ABSTAIN.
 
-`conflict-abstention` is the **single owner** of ABSTAIN decisions.
-It may run more than once.
+`conflict-abstention` is the single owner of the advisory decision.
 
-`self-audit` may invalidate or revise prior claims, but it does not decide the final advisory.
+`self-audit` may retract or revise claims, but does not choose the advisory.
 
-`report-synthesis` does not calculate PASS / REVIEW_REQUIRED / ABSTAIN.
-It only carries forward the latest advisory state produced by `conflict-abstention`.
+`report-synthesis` carries forward the latest advisory and never recomputes it.
 
-## Mandatory principles
+## Final output
 
-- ACTIVE != AUTHORITATIVE.
-- observed behavior != expected behavior.
-- best practice != project requirement.
-- AI finding != verified finding.
-- impact != severity.
-- unresolved material conflict => evaluated by `conflict-abstention`.
-- human reviewer owns merge authority.
+The final user-visible output of this skill is exactly one JSON object conforming to:
 
-## Output
+`schemas/mergeproof_report.schema.json`
 
-Return:
-1. Scope
-2. Source inventory
-3. Authority resolution
-4. Requirement trace
-5. Observed implementation
-6. Test evidence
-7. Findings
-8. Preliminary advisory state
-9. Self-audit corrections
-10. Reconciliation result
-11. Unresolved questions
-12. Final advisory
+The frozen design authority remains:
+
+`docs/05_PREPRODUCTION/01_CONTRACTS_ACTIVE/FEATURE_SCHEMA_FINAL.yaml`
+
+Do not add analysis-only scratch fields to the final report.
+Do not emit a Markdown summary before or after the JSON report.
+
+Populate:
+- `repository.commit_sha` from `MERGEPROOF_RUN_CONTEXT.yaml`;
+- `repository.changed_files` from the case descriptor;
+- source fields from inspected source metadata;
+- requirements only from documented source text;
+- finding anchors using workspace-root-relative artifact paths;
+- `generated_at` as the actual run timestamp.
+
+Never invent a required report value merely to satisfy the schema.
 
 Do not write files.

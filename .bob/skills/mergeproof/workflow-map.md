@@ -1,44 +1,51 @@
 # Workflow Map
 
 ```text
-scope
-  |
-  v
-source-authority
-  |
-  v
-requirement-trace
-  |
-  +-------------------+
-  |                   |
-  v                   v
-implementation     test-acceptance
-observation        audit
-  |                   |
-  +---------+---------+
-            |
-            v
- evidence-classification
-            |
-            v
- severity-impact
-            |
-            v
- conflict-abstention
- (preliminary advisory)
-            |
-            v
-        self-audit
-            |
-            v
-   material correction
-   or new uncertainty?
+MERGEPROOF_RUN_CONTEXT.yaml
+          |
+          v
+     case descriptor
+   / source_files     \
+ changed_files        |
+          |           |
+          +-----+-----+
+                |
+                v
+        source-authority
+                |
+                v
+       requirement-trace
+                |
+        +-------+-------+
+        |               |
+        v               v
+implementation      test-acceptance
+ observation            audit
+        |               |
+        +-------+-------+
+                |
+                v
+     evidence-classification
+                |
+                v
+        severity-impact
+                |
+                v
+      conflict-abstention
+      preliminary advisory
+                |
+                v
+           self-audit
+                |
+                v
+ material correction or
+    new uncertainty?
         /         \
       YES          NO
        |            |
        v            |
  conflict-abstention|
-  (reconciliation)  |
+   reconciliation   |
        |            |
        +------+-----+
               |
@@ -46,14 +53,14 @@ observation        audit
       report-synthesis
               |
               v
-      final advisory
+ canonical JSON report only
 ```
 
-## Architectural invariant
+## Architectural invariants
 
-`conflict-abstention` is the only component allowed to decide whether unresolved
-uncertainty requires `ABSTAIN`.
-
-`self-audit` may force a reconciliation pass by changing material evidence.
-
-`report-synthesis` must use the latest advisory state and must not recompute it.
+- Source authority is resolved before expected behavior is asserted.
+- Requirement evidence and observed implementation remain separate until classification.
+- Independent read-only exploration may be delegated, but final reconciliation stays in
+  the orchestrator.
+- `conflict-abstention` is the only advisory decision point.
+- `report-synthesis` uses the latest advisory state and emits only the canonical JSON report.

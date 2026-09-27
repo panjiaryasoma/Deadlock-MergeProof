@@ -1,61 +1,64 @@
 ---
 name: report-synthesis
-description: Produce the final MergeProof report by carrying forward the latest reconciled advisory state without recomputing PASS, REVIEW_REQUIRED, or ABSTAIN.
+description: Produce the final canonical MergeProof JSON report by carrying forward the latest advisory state without recomputing it.
 ---
 
 # Report Synthesis
 
-Do not synthesize until verification, preliminary abstention analysis,
-self-audit, and any required reconciliation pass are complete.
+Do not synthesize until evidence collection, classification, preliminary advisory,
+self-audit, and any required reconciliation are complete.
 
 ## Advisory ownership
 
-`report-synthesis` is **not** an advisory decision engine.
+`report-synthesis` is not an advisory decision engine.
 
 It must:
-- identify the latest advisory state produced by `conflict-abstention`;
-- use the reconciliation advisory when a reconciliation pass exists;
+- use the latest advisory state produced by `conflict-abstention`;
+- use reconciliation output when a reconciliation pass exists;
 - otherwise use the preliminary advisory;
-- never recompute or override that advisory.
+- never recompute or override the advisory.
 
-If no valid advisory state from `conflict-abstention` exists, do not invent one.
-Report the workflow state as incomplete.
+## Canonical contract
 
-## Canonical report contract
+Read the executable report shape from:
 
-The frozen active implementation contract is:
+`schemas/mergeproof_report.schema.json`
+
+The frozen design authority is:
 
 `docs/05_PREPRODUCTION/01_CONTRACTS_ACTIVE/FEATURE_SCHEMA_FINAL.yaml`
 
-Do not define or maintain a parallel report schema inside this skill.
-Detailed executable schema validation belongs to production Block 2.
+Do not define a parallel report schema in this skill.
 
-## Human-readable output order
+## Field provenance
 
-1. Scope
-2. Source inventory
-3. Authority resolution
-4. Requirement trace
-5. Observed implementation
-6. Test evidence
-7. Findings
-8. Preliminary advisory
-9. Self-audit corrections
-10. Reconciliation result, if any
-11. Unresolved questions
-12. Final advisory
+Populate report fields only from grounded workflow evidence:
 
-## Final advisory
+- `report_version`: frozen contract version;
+- `run_id`: nonempty run identifier grounded in current run context;
+- `advisory`: latest conflict-abstention state;
+- `repository.commit_sha`: `MERGEPROOF_RUN_CONTEXT.yaml`;
+- `repository.changed_files`: case descriptor;
+- `sources`: registered source facts;
+- `requirements`: traced documented requirements when included;
+- `findings`: classified evidence with canonical anchors;
+- `generated_at`: actual run timestamp;
+- `human_override`: omit unless an actual human override is supplied.
 
-Copy exactly one latest advisory state:
-- `PASS`
-- `REVIEW_REQUIRED`
-- `ABSTAIN`
+Preserve project-specific `source.authority` strings exactly.
+Use workspace-root-relative artifact paths in anchors.
 
-Never claim:
-- merged;
-- approved;
-- rejected;
-- human authorization.
+## Final response contract
 
-The final advisory remains decision support only.
+Return exactly one JSON object matching the canonical schema.
+
+Do not prepend or append:
+- Markdown explanation;
+- workflow notes;
+- self-audit notes;
+- source-resolution scratch state;
+- unresolved-question prose outside canonical fields;
+- merge/approve/reject language.
+
+If a required report value cannot be grounded, do not invent it.
+Stop report synthesis and state that the workflow is incomplete.

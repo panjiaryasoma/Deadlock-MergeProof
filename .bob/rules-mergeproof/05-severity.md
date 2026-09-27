@@ -9,22 +9,21 @@ The frozen MergeProof report contract allows only:
 - `LOW`
 - `NONE`
 
-Resolve severity from the frozen MergeProof rules and acceptance artifacts, especially:
-- `docs/03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml`
-- `docs/05_PREPRODUCTION/02_TRIAGE_ACCEPTANCE/TRIAGE_EVALUATION_SUITE.md`
-- `docs/05_PREPRODUCTION/02_TRIAGE_ACCEPTANCE/fixtures/`
+The primary deterministic severity source is:
 
-Apply the mapping deterministically.
+`docs/03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml`
 
-For frozen ambiguity cases:
-- material `SPEC_AMBIGUITY` uses severity `NONE`;
-- `SOURCE_CONFLICT` represented as `SPEC_AMBIGUITY` uses severity `NONE`;
-- the advisory may still be `ABSTAIN`.
+The canonical legal values are frozen in:
 
-Never emit `UNSPECIFIED_BY_PROJECT` or any other out-of-schema severity value.
+`docs/05_PREPRODUCTION/01_CONTRACTS_ACTIVE/FEATURE_SCHEMA_FINAL.yaml`
 
-If no deterministic severity mapping can be resolved from the frozen project rules,
-do not guess. Surface the unresolved severity-contract state for self-audit and
-conflict-abstention.
+Full-repository acceptance fixtures may corroborate a mapping when available, but
+verification must not depend on fixture files that are intentionally absent from an
+isolated evaluation workspace.
+
+Never emit `UNSPECIFIED_BY_PROJECT` or another out-of-schema value.
+
+If available frozen rules do not deterministically resolve severity, do not guess.
+Surface the unresolved severity state to self-audit and conflict-abstention.
 
 Impact and severity are not synonyms.

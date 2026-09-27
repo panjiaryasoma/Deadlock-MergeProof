@@ -5,20 +5,23 @@ description: Convert candidate observations into disciplined MergeProof findings
 
 # Evidence Classification
 
-Allowed:
+Allowed finding classes:
 - `CONFIRMED_ISSUE`
 - `POTENTIAL_RISK`
 - `SPEC_AMBIGUITY`
 - `NO_ISSUE`
 
-Confirmed issue requires:
-- applicable authoritative expected behavior
-- direct/corroborated source evidence
-- direct/corroborated repo/test evidence
-- demonstrated mismatch
+Use `CONFIRMED_ISSUE` only when all are present:
+- applicable authoritative expected behavior;
+- DIRECT or CORROBORATED source evidence;
+- DIRECT or CORROBORATED repository/test evidence;
+- demonstrated mismatch.
 
-Potential risk: concern is plausible but not established as local requirement.
+Use `POTENTIAL_RISK` for a plausible concern not established as a local requirement violation.
 
-Spec ambiguity: expected behavior cannot be resolved reliably.
+Use `SPEC_AMBIGUITY` when expected behavior cannot be resolved reliably.
 
-No issue: evidence supports alignment or harmless change.
+Use `NO_ISSUE` when evidence supports alignment or harmlessness within evaluated scope.
+
+Before handing a finding to report synthesis, ensure its class, type, evidence grade,
+severity, and anchors use only values and fields present in the canonical report contract.

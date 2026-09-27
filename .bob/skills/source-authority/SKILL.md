@@ -5,25 +5,35 @@ description: Inventory project sources and resolve lifecycle state, supersession
 
 # Source Authority
 
-For each relevant source capture:
-- path
-- source type
-- declared state
-- scope
-- version/date if present
-- supersession links
-- repository-defined authority metadata
+For each relevant source capture the canonical source facts:
 
-Resolution:
-1. explicit supersession
-2. repository-defined governance
-3. scope applicability
-4. unresolved if still conflicting
+- `source_id`
+- `source_type`
+- workspace-root-relative `location`
+- declared `authority` string
+- declared lifecycle `state`
+- declared `scope`
+- version/date, supersession, and content hash when present
+
+Resolution order:
+
+1. explicit supersession;
+2. repository-defined governance;
+3. source scope/applicability;
+4. unresolved if still conflicting.
 
 Never choose a source merely because it is newer, an ADR, machine-readable,
 or more formal unless project governance explicitly says so.
 
-Output authority:
-- `AUTHORITATIVE`
-- `NON_AUTHORITATIVE`
-- `UNRESOLVED`
+## Important separation
+
+The report field `source.authority` preserves the repository-declared authority
+value exactly, for example `product_contract`.
+
+Internal authority resolution may classify a source as:
+- AUTHORITATIVE;
+- NON_AUTHORITATIVE;
+- UNRESOLVED.
+
+That internal resolution state is analysis metadata only. Do not replace the
+canonical report's project-specific `authority` string with those labels.

@@ -6,6 +6,7 @@ description: Extract atomic requirements and trace them to changed implementatio
 # Requirement Trace
 
 Preserve exact semantics:
+
 - `<`, `<=`, `>`, `>=`, `==`
 - MUST / MUST NOT
 - required / optional
@@ -16,13 +17,16 @@ Preserve exact semantics:
 - field names/types
 - deadlines and boundaries
 
-For each requirement return:
-- requirement ID if available
-- source anchor
-- exact expectation
-- scope
-- ambiguity status
-- candidate implementation anchors
-- candidate test anchors
+For each applicable requirement capture:
+- requirement ID;
+- source ID;
+- exact statement;
+- declared scope;
+- declared criticality;
+- ambiguity only when supported by source evidence;
+- exact source anchor;
+- candidate implementation anchors;
+- candidate test anchors.
 
+Do not synthesize missing requirement metadata.
 Do not infer undocumented business requirements.
