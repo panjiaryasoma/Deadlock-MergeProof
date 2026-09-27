@@ -1,0 +1,91 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-006-0a219d490eb6-2026-09-27T143756Z",
+  "advisory": "ABSTAIN",
+  "generated_at": "2026-09-27T14:37:56Z",
+  "repository": {
+    "commit_sha": "0a219d490eb62c331a9bb8e9f5d9d033b87f2816",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-006/implementation.py",
+      "eval/fixtures/TRIAGE-006/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-006-ADR-A",
+      "source_type": "ADR",
+      "location": "eval/fixtures/TRIAGE-006/source_a.md",
+      "authority": "architecture_contract",
+      "state": "ACTIVE",
+      "scope": ["eval/fixtures/TRIAGE-006/implementation.py"],
+      "supersedes": null
+    },
+    {
+      "source_id": "SRC-TRIAGE-006-ADR-B",
+      "source_type": "ADR",
+      "location": "eval/fixtures/TRIAGE-006/source_b.md",
+      "authority": "architecture_contract",
+      "state": "ACTIVE",
+      "scope": ["eval/fixtures/TRIAGE-006/implementation.py"],
+      "supersedes": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-006-A",
+      "source_id": "SRC-TRIAGE-006-ADR-A",
+      "statement": "A request remains valid while evaluated_at <= deadline.",
+      "scope": ["eval/fixtures/TRIAGE-006/implementation.py"],
+      "criticality": "HIGH",
+      "ambiguity": "NONE"
+    },
+    {
+      "requirement_id": "REQ-TRIAGE-006-B",
+      "source_id": "SRC-TRIAGE-006-ADR-B",
+      "statement": "A request remains valid while evaluated_at < deadline.",
+      "scope": ["eval/fixtures/TRIAGE-006/implementation.py"],
+      "criticality": "HIGH",
+      "ambiguity": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "SPEC_AMBIGUITY",
+      "finding_type": "SOURCE_CONFLICT",
+      "title": "Authoritative source conflict: deadline boundary operator differs between ADR-A and ADR-B",
+      "evidence_grade": "DIRECT",
+      "severity": "NONE",
+      "requirement_ids": ["REQ-TRIAGE-006-A", "REQ-TRIAGE-006-B"],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-006/source_a.md",
+          "locator": "line:15",
+          "excerpt": "A request remains valid while evaluated_at <= deadline."
+        },
+        {
+          "artifact": "eval/fixtures/TRIAGE-006/source_b.md",
+          "locator": "line:15",
+          "excerpt": "A request remains valid while evaluated_at < deadline."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-006/implementation.py",
+          "locator": "line:7",
+          "excerpt": "return evaluated_at < deadline"
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-006/tests.py",
+          "locator": "lines:13-17",
+          "excerpt": "test_before_deadline_is_valid / test_after_deadline_is_invalid — deadline-equal boundary not tested"
+        }
+      ],
+      "rationale": "SRC-TRIAGE-006-ADR-A (REQ-TRIAGE-006-A) requires evaluated_at <= deadline (inclusive), while SRC-TRIAGE-006-ADR-B (REQ-TRIAGE-006-B) requires evaluated_at < deadline (exclusive). Both sources are ACTIVE, have equal authority (architecture_contract), identical scope, and neither supersedes the other. No repository governance resolves the conflict. The implementation uses strict-less-than (<), which satisfies REQ-TRIAGE-006-B but violates REQ-TRIAGE-006-A. Because the authoritative sources are irreconcilably in conflict for an in-scope, deadline/boundary-critical requirement, SOURCE_CONFLICT applies as the most-specific finding type under domain_rules_v1.0.yaml. The tests do not exercise the evaluated_at == deadline boundary, so correctness of the boundary cannot be verified regardless of which requirement is authoritative. Per DR-003 and advisory_resolution precedence, an unresolved in-scope authoritative source conflict mandates ABSTAIN.",
+      "suggested_human_check": "Determine which of REQ-TRIAGE-006-A (<=) and REQ-TRIAGE-006-B (<) is the authoritative deadline boundary operator, record an explicit supersession in sources.yaml, then re-verify. Also add a test case for evaluated_at == deadline once the boundary is resolved."
+    }
+  ],
+  "human_override": null
+}
