@@ -80,7 +80,7 @@ def test_confirmed_issue_requires_source_anchor() -> None:
     payload = _valid_payload()
     payload["findings"][0]["source_anchors"] = []
 
-    assert "NON_CLEAN_WITHOUT_SOURCE_ANCHOR" in _codes(_report(payload))
+    assert "FINDING_WITHOUT_REQUIRED_SOURCE_ANCHOR" in _codes(_report(payload))
 
 
 def test_spec_ambiguity_requires_source_anchor() -> None:
@@ -94,7 +94,7 @@ def test_spec_ambiguity_requires_source_anchor() -> None:
         }
     )
 
-    assert "NON_CLEAN_WITHOUT_SOURCE_ANCHOR" in _codes(_report(payload))
+    assert "FINDING_WITHOUT_REQUIRED_SOURCE_ANCHOR" in _codes(_report(payload))
 
 
 def test_best_practice_risk_requires_source_anchor() -> None:
@@ -108,7 +108,22 @@ def test_best_practice_risk_requires_source_anchor() -> None:
         }
     )
 
-    assert "NON_CLEAN_WITHOUT_SOURCE_ANCHOR" in _codes(_report(payload))
+    assert "FINDING_WITHOUT_REQUIRED_SOURCE_ANCHOR" in _codes(_report(payload))
+
+
+def test_other_potential_risk_is_not_blanket_source_anchor_rejected() -> None:
+    payload = _valid_payload()
+    payload["findings"][0].update(
+        {
+            "finding_class": "POTENTIAL_RISK",
+            "finding_type": "API_CONTRACT_DRIFT",
+            "evidence_grade": "INFERRED",
+            "severity": "LOW",
+            "source_anchors": [],
+        }
+    )
+
+    assert "FINDING_WITHOUT_REQUIRED_SOURCE_ANCHOR" not in _codes(_report(payload))
 
 
 def test_every_finding_requires_repository_anchor() -> None:
@@ -200,7 +215,7 @@ def test_validator_collects_all_observable_issues() -> None:
     codes = _codes(_report(payload))
 
     assert codes.count("FINDING_WITHOUT_REPOSITORY_ANCHOR") == 1
-    assert codes.count("NON_CLEAN_WITHOUT_SOURCE_ANCHOR") == 1
+    assert codes.count("FINDING_WITHOUT_REQUIRED_SOURCE_ANCHOR") == 1
     assert codes.count("CONFIRMED_WITH_WEAK_EVIDENCE") == 1
     assert codes.count("CONFIRMED_BEST_PRACTICE_CLAIM") == 1
     assert codes.count("FORBIDDEN_FIELD") == 1

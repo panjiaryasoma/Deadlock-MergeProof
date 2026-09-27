@@ -66,12 +66,24 @@ def validate_report(report: MergeProofReport) -> list[ValidationIssue]:
                 )
             )
 
-        if finding.finding_class is not FindingClass.NO_ISSUE and not finding.source_anchors:
+        requires_source_anchor = (
+            finding.finding_class
+            in {
+                FindingClass.CONFIRMED_ISSUE,
+                FindingClass.SPEC_AMBIGUITY,
+            }
+            or finding.finding_type
+            in {
+                FindingType.SOURCE_CONFLICT,
+                FindingType.UNSUPPORTED_BEST_PRACTICE_CLAIM,
+            }
+        )
+        if requires_source_anchor and not finding.source_anchors:
             issues.append(
                 ValidationIssue(
-                    "NON_CLEAN_WITHOUT_SOURCE_ANCHOR",
+                    "FINDING_WITHOUT_REQUIRED_SOURCE_ANCHOR",
                     f"{finding.finding_id} must include at least one source anchor "
-                    "for a non-clean finding.",
+                    "for this finding class/type.",
                 )
             )
 

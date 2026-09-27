@@ -66,7 +66,7 @@ def test_acceptance_confirmed_issue_without_anchors_fails() -> None:
     codes = {issue.code for issue in validate_report(report)}
 
     assert "FINDING_WITHOUT_REPOSITORY_ANCHOR" in codes
-    assert "NON_CLEAN_WITHOUT_SOURCE_ANCHOR" in codes
+    assert "FINDING_WITHOUT_REQUIRED_SOURCE_ANCHOR" in codes
 
 
 def test_acceptance_invalid_enum_fails() -> None:
