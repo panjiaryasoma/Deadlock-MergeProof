@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from demo.src.deadline import is_submission_expired
 
 
 class SubmissionDeadlineTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.deadline = datetime(2026, 9, 27, 12, 0, tzinfo=timezone.utc)
+        self.deadline = datetime(2026, 9, 27, 12, 0, tzinfo=UTC)
 
     def test_before_deadline_is_open(self) -> None:
         evaluated_at = self.deadline - timedelta(seconds=1)
