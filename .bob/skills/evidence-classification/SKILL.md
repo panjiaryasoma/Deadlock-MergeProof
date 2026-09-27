@@ -38,9 +38,13 @@ In particular:
 - API request/response contract drift is `API_CONTRACT_DRIFT`;
 - enum/type/nullability/schema drift is `ENUM_OR_SCHEMA_DRIFT`;
 - unresolved authoritative-source disagreement is `SOURCE_CONFLICT`;
-- explicit supersession/stale-source reasoning is `STALE_SOURCE`;
+- explicit supersession/stale-source reasoning is `STALE_SOURCE`. If a relevant
+  superseded source and its active superseding source are both present,
+  `STALE_SOURCE` takes precedence over `HARMLESS_REFACTOR`;
 - external-guidance-only concerns are `UNSUPPORTED_BEST_PRACTICE_CLAIM`;
-- evidenced behavior-preserving internal refactors are `HARMLESS_REFACTOR`.
+- `HARMLESS_REFACTOR` is allowed only when explicit change evidence supports an
+  internal behavior-preserving refactor. Do not use it merely because current
+  implementation and tests align with the active requirement.
 
 Use `REQUIREMENT_IMPLEMENTATION_MISMATCH` only as the generic fallback when no
 more-specific supported type applies.
