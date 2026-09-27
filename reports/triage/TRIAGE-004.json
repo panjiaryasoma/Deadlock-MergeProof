@@ -1,0 +1,78 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-004-0a219d490eb6-2026-09-27T143756Z",
+  "advisory": "ABSTAIN",
+  "generated_at": "2026-09-27T14:37:56Z",
+  "repository": {
+    "commit_sha": "0a219d490eb62c331a9bb8e9f5d9d033b87f2816",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-004/implementation.py",
+      "eval/fixtures/TRIAGE-004/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-004-PRD",
+      "source_type": "PRD",
+      "location": "eval/fixtures/TRIAGE-004/source.md",
+      "authority": "product_contract",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-004/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-004",
+      "source_id": "SRC-TRIAGE-004-PRD",
+      "statement": "The service must respond quickly.",
+      "scope": [
+        "eval/fixtures/TRIAGE-004/implementation.py"
+      ],
+      "criticality": "MEDIUM",
+      "ambiguity": "MATERIAL"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "SPEC_AMBIGUITY",
+      "finding_type": "REQUIREMENT_IMPLEMENTATION_MISMATCH",
+      "title": "REQ-TRIAGE-004 defines no measurable latency or timeout bound",
+      "evidence_grade": "DIRECT",
+      "severity": "NONE",
+      "rationale": "REQ-TRIAGE-004 states 'The service must respond quickly.' The source document itself records: 'No numeric latency or timeout bound is defined by this source.' Because no measurable criterion exists, it is not possible to determine whether REQUEST_TIMEOUT_SECONDS = 3 satisfies or violates the requirement. The requirement is materially ambiguous. Under DR-002 and advisory_resolution, material ambiguity is independently sufficient for ABSTAIN. Under DR-011, SPEC_AMBIGUITY carries severity NONE.",
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-004/source.md",
+          "locator": "REQ-TRIAGE-004",
+          "excerpt": "Statement: The service must respond quickly. Note: No numeric latency or timeout bound is defined by this source."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-004/implementation.py",
+          "locator": "module:REQUEST_TIMEOUT_SECONDS:3",
+          "excerpt": "REQUEST_TIMEOUT_SECONDS = 3"
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-004/tests.py",
+          "locator": "TimeoutConfigurationTests.test_timeout_is_positive:10",
+          "excerpt": "self.assertGreater(REQUEST_TIMEOUT_SECONDS, 0)"
+        }
+      ],
+      "requirement_ids": [
+        "REQ-TRIAGE-004"
+      ],
+      "suggested_human_check": "Define a measurable latency or timeout bound in SRC-TRIAGE-004-PRD before attempting verification. Until a numeric criterion is established, compliance cannot be determined."
+    }
+  ],
+  "human_override": null
+}
