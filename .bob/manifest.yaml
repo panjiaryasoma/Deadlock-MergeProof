@@ -1,0 +1,7 @@
+manifest_version: "1.0"
+bob_mode:
+  slug: mergeproof
+  version: "1.0.0"
+skill:
+  name: mergeproof
+  version: "1.0.0"
