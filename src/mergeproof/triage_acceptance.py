@@ -18,7 +18,7 @@ class TriageExpectation:
     advisory: Advisory
 
     @classmethod
-    def from_mapping(cls, payload: dict[str, Any]) -> "TriageExpectation":
+    def from_mapping(cls, payload: dict[str, Any]) -> TriageExpectation:
         expected = payload["expected"]
         return cls(
             case_id=str(payload["case_id"]),
