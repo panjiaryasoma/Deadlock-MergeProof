@@ -183,8 +183,12 @@ def evaluate_triage_report(
                 )
             )
 
+    case_payload = _workspace_yaml(
+        workspace,
+        str(run_context.get("case_descriptor", "")),
+    )
     registered = _registered_sources(workspace, run_context)
-    if registered is None:
+    if case_payload is None or registered is None:
         issues.append(
             AcceptanceIssue(
                 "SOURCE_REGISTRY_INVALID",
@@ -273,7 +277,40 @@ def evaluate_triage_report(
         for source in registered
         if str(source["state"]) == "ACTIVE"
     }
-    changed_files = set(run_context.get("changed_files", []))
+    relevant_repo_locations = set(run_context.get("changed_files", []))
+    change_evidence = case_payload.get("change_evidence")
+    if isinstance(change_evidence, str):
+        relevant_repo_locations.add(change_evidence)
+
+    superseded_locations = {
+        str(source["location"])
+        for source in registered
+        if str(source["state"]) == "SUPERSEDED"
+    }
+    superseded_ids = {
+        str(source["source_id"])
+        for source in registered
+        if str(source["state"]) == "SUPERSEDED"
+    }
+    superseding_locations = {
+        str(source["location"])
+        for source in registered
+        if any(
+            superseded_id in (source.get("supersedes") or [])
+            for superseded_id in superseded_ids
+        )
+    }
+    external_locations = {
+        str(source["location"])
+        for source in registered
+        if str(source["source_type"]) == "EXTERNAL_GUIDANCE"
+    }
+    project_locations = {
+        str(source["location"])
+        for source in registered
+        if str(source["source_type"]) != "EXTERNAL_GUIDANCE"
+        and str(source["state"]) == "ACTIVE"
+    }
 
     for source in report.sources:
         if _workspace_file(workspace, source.location) is None:
@@ -287,12 +324,12 @@ def evaluate_triage_report(
 
     for finding in report.findings:
         for anchor in finding.repo_anchors:
-            if anchor.artifact not in changed_files:
+            if anchor.artifact not in relevant_repo_locations:
                 issues.append(
                     AcceptanceIssue(
-                        "REPO_ANCHOR_OUTSIDE_CHANGE_SCOPE",
+                        "REPO_ANCHOR_OUTSIDE_EVALUATED_SCOPE",
                         f"{finding.finding_id} repository anchor {anchor.artifact!r} "
-                        "is not in the evaluated changed-file scope.",
+                        "is not in the evaluated changed/relevant artifact scope.",
                     )
                 )
 
@@ -306,18 +343,47 @@ def evaluate_triage_report(
                     )
                 )
 
+        anchored_sources = {
+            anchor.artifact
+            for anchor in finding.source_anchors
+            if anchor.artifact in registered_locations
+        }
+
         if finding.finding_type is FindingType.SOURCE_CONFLICT:
-            anchored_sources = {
-                anchor.artifact
-                for anchor in finding.source_anchors
-                if anchor.artifact in registered_locations
-            }
             if len(active_locations) < 2 or not active_locations.issubset(anchored_sources):
                 issues.append(
                     AcceptanceIssue(
                         "SOURCE_CONFLICT_EVIDENCE_INCOMPLETE",
                         f"{finding.finding_id} must cite both active sides of the "
                         "registered source conflict.",
+                    )
+                )
+
+        if finding.finding_type is FindingType.STALE_SOURCE:
+            required_stale_evidence = superseded_locations | superseding_locations
+            if (
+                not superseded_locations
+                or not superseding_locations
+                or not required_stale_evidence.issubset(anchored_sources)
+            ):
+                issues.append(
+                    AcceptanceIssue(
+                        "STALE_SOURCE_EVIDENCE_INCOMPLETE",
+                        f"{finding.finding_id} must cite the superseded source and "
+                        "the active source that explicitly supersedes it.",
+                    )
+                )
+
+        if finding.finding_type is FindingType.UNSUPPORTED_BEST_PRACTICE_CLAIM:
+            if (
+                not (anchored_sources & external_locations)
+                or not (anchored_sources & project_locations)
+            ):
+                issues.append(
+                    AcceptanceIssue(
+                        "BEST_PRACTICE_EVIDENCE_INCOMPLETE",
+                        f"{finding.finding_id} must cite both project evidence and "
+                        "the external-guidance source.",
                     )
                 )
 
