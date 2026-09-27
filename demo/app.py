@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from demo.src.deadline import is_submission_expired
 
@@ -10,7 +10,7 @@ def _status(evaluated_at: datetime, deadline: datetime) -> str:
 
 
 def main() -> int:
-    deadline = datetime(2026, 9, 27, 12, 0, tzinfo=timezone.utc)
+    deadline = datetime(2026, 9, 27, 12, 0, tzinfo=UTC)
     samples = (
         deadline - timedelta(seconds=1),
         deadline + timedelta(seconds=1),
