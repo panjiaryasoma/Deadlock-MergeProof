@@ -580,3 +580,33 @@ def test_custom_mode_forbids_user_visible_workflow_narration() -> None:
     assert "never narrate stage headings" in mode
     assert "first non-whitespace character" in mode
     assert "progress messages" in rule
+
+
+def test_triage_evaluator_accepts_bob_colon_line_locators(tmp_path: Path) -> None:
+    case_id = "TRIAGE-001"
+    workspace = _prepare(case_id, tmp_path / "triage")
+    context = _load_yaml(workspace / "MERGEPROOF_RUN_CONTEXT.yaml")
+    expectation = TriageExpectation.from_mapping(
+        _load_yaml(REPO_ROOT / "eval" / "expected" / f"{case_id}.yaml")
+    )
+    report = _synthetic_report(case_id, workspace, expectation, context)
+    payload = json.loads(report.model_dump_json())
+
+    payload["findings"][0]["source_anchors"][0]["locator"] = "line:14"
+    payload["findings"][0]["repo_anchors"][0]["locator"] = "line:7"
+    payload["findings"][0]["test_anchors"] = [
+        {
+            "artifact": "eval/fixtures/TRIAGE-001/tests.py",
+            "locator": "line:13-17",
+        }
+    ]
+
+    bob_style = MergeProofReport.model_validate(payload)
+    codes = _evaluation_codes(
+        bob_style,
+        expectation,
+        context,
+        workspace,
+    )
+
+    assert "ANCHOR_LOCATOR_UNRESOLVED" not in codes

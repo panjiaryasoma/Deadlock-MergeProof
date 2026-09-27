@@ -12,7 +12,7 @@ from .models import MergeProofReport, Source
 from .validator import validate_report
 
 LINE_LOCATOR = re.compile(
-    r"^(?:line|lines|l)\s*(\d+)(?:\s*[-:]\s*(\d+))?$",
+    r"^(?:line|lines|l)\s*:?\s*(\d+)(?:\s*[-:]\s*(\d+))?$",
     re.IGNORECASE,
 )
 LOCATOR_TOKEN = re.compile(r"[A-Za-z_][A-Za-z0-9_-]{2,}")
