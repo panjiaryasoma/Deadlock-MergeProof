@@ -1,0 +1,20 @@
+case_id: TRIAGE-006
+skill_version: "1.0.2"
+measurement_status: FAIL
+semantic_tuple_match: true
+expected:
+  finding_class: SPEC_AMBIGUITY
+  finding_type: SOURCE_CONFLICT
+  severity: NONE
+  advisory: ABSTAIN
+observed_primary:
+  finding_class: SPEC_AMBIGUITY
+  finding_type: SOURCE_CONFLICT
+  severity: NONE
+  advisory: ABSTAIN
+transport_contract:
+  pass: false
+  reason: "Bob emitted user-visible workflow reasoning before the canonical JSON object."
+notes:
+  - "Semantic classification, severity, source-conflict reasoning, and advisory matched the frozen expectation."
+  - "This v1.0.2 run is diagnostic-only because raw-JSON-only transport was violated."
