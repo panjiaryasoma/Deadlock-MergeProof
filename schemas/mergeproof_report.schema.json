@@ -201,14 +201,7 @@
       "additionalProperties": true,
       "properties": {
         "ambiguity": {
-          "anyOf": [
-            {
-              "$ref": "#/$defs/RequirementAmbiguity"
-            },
-            {
-              "type": "null"
-            }
-          ],
+          "$ref": "#/$defs/RequirementAmbiguity",
           "default": null
         },
         "criticality": {
