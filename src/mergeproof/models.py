@@ -78,11 +78,7 @@ class Repository(MergeProofModel):
 
 
 class HumanOverride(MergeProofModel):
-    """Optional human-override object.
-
-    The frozen schema declares this as an object/null without freezing nested keys yet.
-    Unknown nested data is therefore preserved rather than silently discarded.
-    """
+    """Optional human-override object with nested keys not yet frozen by the schema."""
 
 
 class MergeProofReport(MergeProofModel):
@@ -95,9 +91,3 @@ class MergeProofReport(MergeProofModel):
     generated_at: str
     requirements: list[Requirement] = Field(default_factory=list)
     human_override: HumanOverride | None = None
-
-
-# Compatibility aliases for downstream pre-Block-2 code.
-# They do not alter the canonical wire field names above.
-EvidenceAnchor = Anchor
-SourceRecord = Source

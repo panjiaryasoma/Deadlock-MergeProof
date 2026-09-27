@@ -69,16 +69,3 @@ class Severity(StrEnum):
     MEDIUM = "MEDIUM"
     LOW = "LOW"
     NONE = "NONE"
-
-
-class SourceAuthority(StrEnum):
-    """Temporary compatibility enum for pre-Block-2 downstream code.
-
-    The canonical source contract models authority as a project-specific string.
-    This enum is not used by the Block 2A Source model and should disappear when
-    downstream validator/aggregator compatibility is cleaned up in Block 2E.
-    """
-
-    AUTHORITATIVE = "AUTHORITATIVE"
-    NON_AUTHORITATIVE = "NON_AUTHORITATIVE"
-    UNRESOLVED = "UNRESOLVED"

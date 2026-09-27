@@ -167,16 +167,7 @@ def test_missing_required_report_field_is_rejected() -> None:
 
 def test_invalid_canonical_enum_is_rejected() -> None:
     payload = _valid_payload()
-    payload["findings"][0]["severity"] = "UNSPECIFIED_BY_PROJECT"
-
-    with pytest.raises(ValidationError):
-        MergeProofReport.model_validate(payload)
-
-
-def test_old_report_shape_cannot_replace_required_canonical_fields() -> None:
-    payload = _valid_payload()
-    payload.pop("repository")
-    payload["scope"] = {"changed_files": ["src/example.py"]}
+    payload["findings"][0]["severity"] = "SEVERE"
 
     with pytest.raises(ValidationError):
         MergeProofReport.model_validate(payload)

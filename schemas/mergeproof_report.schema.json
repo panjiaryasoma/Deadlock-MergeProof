@@ -1,0 +1,456 @@
+{
+  "$defs": {
+    "Advisory": {
+      "enum": [
+        "PASS",
+        "REVIEW_REQUIRED",
+        "ABSTAIN"
+      ],
+      "title": "Advisory",
+      "type": "string"
+    },
+    "Anchor": {
+      "additionalProperties": true,
+      "properties": {
+        "artifact": {
+          "title": "Artifact",
+          "type": "string"
+        },
+        "commit_sha": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Commit Sha"
+        },
+        "excerpt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Excerpt"
+        },
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact",
+        "locator"
+      ],
+      "title": "Anchor",
+      "type": "object"
+    },
+    "EvidenceGrade": {
+      "enum": [
+        "DIRECT",
+        "CORROBORATED",
+        "INFERRED",
+        "INSUFFICIENT"
+      ],
+      "title": "EvidenceGrade",
+      "type": "string"
+    },
+    "Finding": {
+      "additionalProperties": true,
+      "properties": {
+        "evidence_grade": {
+          "$ref": "#/$defs/EvidenceGrade"
+        },
+        "finding_class": {
+          "$ref": "#/$defs/FindingClass"
+        },
+        "finding_id": {
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "finding_type": {
+          "$ref": "#/$defs/FindingType"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "repo_anchors": {
+          "items": {
+            "$ref": "#/$defs/Anchor"
+          },
+          "title": "Repo Anchors",
+          "type": "array"
+        },
+        "requirement_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Requirement Ids",
+          "type": "array"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "source_anchors": {
+          "items": {
+            "$ref": "#/$defs/Anchor"
+          },
+          "title": "Source Anchors",
+          "type": "array"
+        },
+        "suggested_human_check": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suggested Human Check"
+        },
+        "test_anchors": {
+          "items": {
+            "$ref": "#/$defs/Anchor"
+          },
+          "title": "Test Anchors",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "finding_class",
+        "finding_type",
+        "title",
+        "evidence_grade",
+        "severity",
+        "repo_anchors",
+        "rationale"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "FindingClass": {
+      "enum": [
+        "CONFIRMED_ISSUE",
+        "POTENTIAL_RISK",
+        "SPEC_AMBIGUITY",
+        "NO_ISSUE"
+      ],
+      "title": "FindingClass",
+      "type": "string"
+    },
+    "FindingType": {
+      "enum": [
+        "REQUIREMENT_IMPLEMENTATION_MISMATCH",
+        "API_CONTRACT_DRIFT",
+        "BOUNDARY_CONDITION_DRIFT",
+        "ENUM_OR_SCHEMA_DRIFT",
+        "MISSING_ACCEPTANCE_TEST",
+        "SOURCE_CONFLICT",
+        "STALE_SOURCE",
+        "UNSUPPORTED_BEST_PRACTICE_CLAIM",
+        "HARMLESS_REFACTOR"
+      ],
+      "title": "FindingType",
+      "type": "string"
+    },
+    "HumanOverride": {
+      "additionalProperties": true,
+      "description": "Optional human-override object with nested keys not yet frozen by the schema.",
+      "properties": {},
+      "title": "HumanOverride",
+      "type": "object"
+    },
+    "Repository": {
+      "additionalProperties": true,
+      "properties": {
+        "changed_files": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Changed Files",
+          "type": "array"
+        },
+        "commit_sha": {
+          "title": "Commit Sha",
+          "type": "string"
+        }
+      },
+      "required": [
+        "commit_sha",
+        "changed_files"
+      ],
+      "title": "Repository",
+      "type": "object"
+    },
+    "Requirement": {
+      "additionalProperties": true,
+      "properties": {
+        "ambiguity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RequirementAmbiguity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "criticality": {
+          "$ref": "#/$defs/RequirementCriticality"
+        },
+        "requirement_id": {
+          "title": "Requirement Id",
+          "type": "string"
+        },
+        "scope": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scope",
+          "type": "array"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "statement": {
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirement_id",
+        "source_id",
+        "statement",
+        "scope",
+        "criticality"
+      ],
+      "title": "Requirement",
+      "type": "object"
+    },
+    "RequirementAmbiguity": {
+      "enum": [
+        "NONE",
+        "MINOR",
+        "MATERIAL"
+      ],
+      "title": "RequirementAmbiguity",
+      "type": "string"
+    },
+    "RequirementCriticality": {
+      "enum": [
+        "CRITICAL",
+        "HIGH",
+        "MEDIUM",
+        "LOW"
+      ],
+      "title": "RequirementCriticality",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "CRITICAL",
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "NONE"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "Source": {
+      "additionalProperties": true,
+      "properties": {
+        "authority": {
+          "title": "Authority",
+          "type": "string"
+        },
+        "content_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Hash"
+        },
+        "effective_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effective At"
+        },
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "scope": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scope",
+          "type": "array"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_type": {
+          "$ref": "#/$defs/SourceType"
+        },
+        "state": {
+          "$ref": "#/$defs/SourceState"
+        },
+        "supersedes": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Supersedes"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        }
+      },
+      "required": [
+        "source_id",
+        "source_type",
+        "location",
+        "authority",
+        "state",
+        "scope"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "SourceState": {
+      "enum": [
+        "ACTIVE",
+        "SUPERSEDED",
+        "CONFLICTING",
+        "UNKNOWN"
+      ],
+      "title": "SourceState",
+      "type": "string"
+    },
+    "SourceType": {
+      "enum": [
+        "MACHINE_READABLE_CONTRACT",
+        "CHANGE_ACCEPTANCE_CRITERIA",
+        "ADR",
+        "PRD",
+        "REPOSITORY_DOCUMENTATION",
+        "ISSUE_OR_PR_TEXT",
+        "EXTERNAL_GUIDANCE"
+      ],
+      "title": "SourceType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": true,
+  "properties": {
+    "advisory": {
+      "$ref": "#/$defs/Advisory"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "human_override": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HumanOverride"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "report_version": {
+      "title": "Report Version",
+      "type": "string"
+    },
+    "repository": {
+      "$ref": "#/$defs/Repository"
+    },
+    "requirements": {
+      "items": {
+        "$ref": "#/$defs/Requirement"
+      },
+      "title": "Requirements",
+      "type": "array"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "title": "Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "report_version",
+    "run_id",
+    "advisory",
+    "repository",
+    "sources",
+    "findings",
+    "generated_at"
+  ],
+  "title": "MergeProofReport",
+  "type": "object"
+}

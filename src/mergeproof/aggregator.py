@@ -1,29 +1,25 @@
-from .enums import Advisory, FindingClass, SourceAuthority, SourceState
-from .models import Finding, SourceRecord
+from .enums import Advisory, FindingClass, SourceState
+from .models import Finding, Source
 
 
 def aggregate_advisory(
     findings: list[Finding],
-    sources: list[SourceRecord],
+    sources: list[Source],
     *,
     has_material_unresolved_question: bool = False,
 ) -> Advisory:
     if has_material_unresolved_question:
         return Advisory.ABSTAIN
 
-    if any(
-        source.state is SourceState.CONFLICTING
-        or source.authority is SourceAuthority.UNRESOLVED
-        for source in sources
-    ):
+    if any(source.state is SourceState.CONFLICTING for source in sources):
         return Advisory.ABSTAIN
 
-    if any(f.finding_class is FindingClass.SPEC_AMBIGUITY for f in findings):
+    if any(finding.finding_class is FindingClass.SPEC_AMBIGUITY for finding in findings):
         return Advisory.ABSTAIN
 
     if any(
-        f.finding_class in {FindingClass.CONFIRMED_ISSUE, FindingClass.POTENTIAL_RISK}
-        for f in findings
+        finding.finding_class in {FindingClass.CONFIRMED_ISSUE, FindingClass.POTENTIAL_RISK}
+        for finding in findings
     ):
         return Advisory.REVIEW_REQUIRED
 
