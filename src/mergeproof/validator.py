@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -35,12 +36,42 @@ def _iter_forbidden_fields(value: Any, path: str = "$") -> list[tuple[str, str]]
 def validate_report(report: MergeProofReport) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
 
+    source_id_counts = Counter(source.source_id for source in report.sources)
+    for source_id, count in source_id_counts.items():
+        if count > 1:
+            issues.append(
+                ValidationIssue(
+                    "DUPLICATE_SOURCE_ID",
+                    f"{source_id} appears {count} times; source_id values must be unique.",
+                )
+            )
+
+    known_source_ids = set(source_id_counts)
+    for requirement in report.requirements:
+        if requirement.source_id not in known_source_ids:
+            issues.append(
+                ValidationIssue(
+                    "UNKNOWN_REQUIREMENT_SOURCE_ID",
+                    f"{requirement.requirement_id} references unknown source_id "
+                    f"{requirement.source_id!r}.",
+                )
+            )
+
     for finding in report.findings:
         if not finding.repo_anchors:
             issues.append(
                 ValidationIssue(
                     "FINDING_WITHOUT_REPOSITORY_ANCHOR",
                     f"{finding.finding_id} must include at least one repository anchor.",
+                )
+            )
+
+        if finding.finding_class is not FindingClass.NO_ISSUE and not finding.source_anchors:
+            issues.append(
+                ValidationIssue(
+                    "NON_CLEAN_WITHOUT_SOURCE_ANCHOR",
+                    f"{finding.finding_id} must include at least one source anchor "
+                    "for a non-clean finding.",
                 )
             )
 
@@ -53,13 +84,6 @@ def validate_report(report: MergeProofReport) -> list[ValidationIssue]:
                     ValidationIssue(
                         "CONFIRMED_WITH_WEAK_EVIDENCE",
                         f"{finding.finding_id} must use DIRECT or CORROBORATED evidence.",
-                    )
-                )
-            if not finding.source_anchors:
-                issues.append(
-                    ValidationIssue(
-                        "CONFIRMED_WITHOUT_SOURCE_ANCHOR",
-                        f"{finding.finding_id} must include at least one source anchor.",
                     )
                 )
 

@@ -21,6 +21,15 @@ def _valid_payload() -> dict:
                 "scope": ["submission_deadline"],
             }
         ],
+        "requirements": [
+            {
+                "requirement_id": "REQ-001",
+                "source_id": "SRC-001",
+                "statement": "evaluated_at >= submission_deadline",
+                "scope": ["submission_deadline"],
+                "criticality": "HIGH",
+            }
+        ],
         "findings": [
             {
                 "finding_id": "F-001",
@@ -71,7 +80,35 @@ def test_confirmed_issue_requires_source_anchor() -> None:
     payload = _valid_payload()
     payload["findings"][0]["source_anchors"] = []
 
-    assert "CONFIRMED_WITHOUT_SOURCE_ANCHOR" in _codes(_report(payload))
+    assert "NON_CLEAN_WITHOUT_SOURCE_ANCHOR" in _codes(_report(payload))
+
+
+def test_spec_ambiguity_requires_source_anchor() -> None:
+    payload = _valid_payload()
+    payload["findings"][0].update(
+        {
+            "finding_class": "SPEC_AMBIGUITY",
+            "finding_type": "SOURCE_CONFLICT",
+            "severity": "NONE",
+            "source_anchors": [],
+        }
+    )
+
+    assert "NON_CLEAN_WITHOUT_SOURCE_ANCHOR" in _codes(_report(payload))
+
+
+def test_best_practice_risk_requires_source_anchor() -> None:
+    payload = _valid_payload()
+    payload["findings"][0].update(
+        {
+            "finding_class": "POTENTIAL_RISK",
+            "finding_type": "UNSUPPORTED_BEST_PRACTICE_CLAIM",
+            "severity": "MEDIUM",
+            "source_anchors": [],
+        }
+    )
+
+    assert "NON_CLEAN_WITHOUT_SOURCE_ANCHOR" in _codes(_report(payload))
 
 
 def test_every_finding_requires_repository_anchor() -> None:
@@ -100,6 +137,26 @@ def test_best_practice_claim_cannot_be_confirmed_issue() -> None:
     payload["findings"][0]["finding_type"] = "UNSUPPORTED_BEST_PRACTICE_CLAIM"
 
     assert "CONFIRMED_BEST_PRACTICE_CLAIM" in _codes(_report(payload))
+
+
+def test_duplicate_source_ids_are_rejected() -> None:
+    payload = _valid_payload()
+    duplicate = dict(payload["sources"][0])
+    payload["sources"].append(duplicate)
+
+    assert "DUPLICATE_SOURCE_ID" in _codes(_report(payload))
+
+
+def test_requirement_source_id_must_reference_registered_source() -> None:
+    payload = _valid_payload()
+    payload["requirements"][0]["source_id"] = "SRC-GAIB"
+
+    assert "UNKNOWN_REQUIREMENT_SOURCE_ID" in _codes(_report(payload))
+
+
+def test_valid_source_ids_and_requirement_references_pass() -> None:
+    assert "DUPLICATE_SOURCE_ID" not in _codes(_report())
+    assert "UNKNOWN_REQUIREMENT_SOURCE_ID" not in _codes(_report())
 
 
 def test_forbidden_probability_fields_are_found_recursively() -> None:
@@ -143,8 +200,8 @@ def test_validator_collects_all_observable_issues() -> None:
     codes = _codes(_report(payload))
 
     assert codes.count("FINDING_WITHOUT_REPOSITORY_ANCHOR") == 1
+    assert codes.count("NON_CLEAN_WITHOUT_SOURCE_ANCHOR") == 1
     assert codes.count("CONFIRMED_WITH_WEAK_EVIDENCE") == 1
-    assert codes.count("CONFIRMED_WITHOUT_SOURCE_ANCHOR") == 1
     assert codes.count("CONFIRMED_BEST_PRACTICE_CLAIM") == 1
     assert codes.count("FORBIDDEN_FIELD") == 1
     assert len(codes) == 5
