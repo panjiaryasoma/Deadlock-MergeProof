@@ -1,0 +1,76 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-004-5f8be04084ce-2026-09-27T134524Z",
+  "generated_at": "2026-09-27T13:45:24Z",
+  "advisory": "PASS",
+  "repository": {
+    "commit_sha": "5f8be04084ce306c8718942ea303a356adaab0c7",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-004/implementation.py",
+      "eval/fixtures/TRIAGE-004/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-004-PRD",
+      "source_type": "PRD",
+      "location": "eval/fixtures/TRIAGE-004/source.md",
+      "authority": "product_contract",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-004/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-004",
+      "source_id": "SRC-TRIAGE-004-PRD",
+      "statement": "The service must respond quickly.",
+      "scope": [
+        "eval/fixtures/TRIAGE-004/implementation.py"
+      ],
+      "criticality": "MEDIUM",
+      "ambiguity": "MATERIAL"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "SPEC_AMBIGUITY",
+      "finding_type": "REQUIREMENT_IMPLEMENTATION_MISMATCH",
+      "title": "REQ-TRIAGE-004 defines no numeric latency or timeout bound",
+      "evidence_grade": "DIRECT",
+      "severity": "NONE",
+      "requirement_ids": ["REQ-TRIAGE-004"],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-004/source.md",
+          "locator": "line:14-15",
+          "excerpt": "Statement: The service must respond quickly. Note: No numeric latency or timeout bound is defined by this source."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-004/implementation.py",
+          "locator": "line:3",
+          "excerpt": "REQUEST_TIMEOUT_SECONDS = 3"
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-004/tests.py",
+          "locator": "line:9-10",
+          "excerpt": "def test_timeout_is_positive(self) -> None:\n    self.assertGreater(REQUEST_TIMEOUT_SECONDS, 0)"
+        }
+      ],
+      "rationale": "SRC-TRIAGE-004-PRD explicitly states that no numeric latency or timeout bound is defined. The requirement 'must respond quickly' is a non-quantified qualitative statement. The implementation sets REQUEST_TIMEOUT_SECONDS = 3 and the test verifies only that the value is positive (> 0). Because no authoritative numeric bound exists, it is impossible to confirm whether the implementation satisfies, violates, or approximates the requirement. This is material ambiguity under DR-002: the requirement imposes no verifiable acceptance boundary, and the test exercises only a trivially weaker property (positivity). No CONFIRMED_ISSUE is possible without a documented numeric bound. The advisory cannot be ABSTAIN because there is no unresolved source conflict (DR-003); ambiguity here resides entirely within the single authoritative source itself. No other applicable finding type is more specific: no explicit acceptance boundary exists (rules out MISSING_ACCEPTANCE_TEST), no comparison operator drift exists (rules out BOUNDARY_CONDITION_DRIFT), and no API/schema contract is defined (rules out API_CONTRACT_DRIFT, ENUM_OR_SCHEMA_DRIFT). The only material concern is the absence of a verifiable requirement — a SPEC_AMBIGUITY. DR-011 assigns severity NONE to SPEC_AMBIGUITY findings. The implementation does not introduce a regression against any determinable requirement, and the test is internally consistent with the implementation as written. Advisory is PASS: no confirmed violation is supportable; human reviewer should note the unquantified requirement.",
+      "suggested_human_check": "Confirm whether a numeric timeout bound should be specified in SRC-TRIAGE-004-PRD. If a specific value (e.g., ≤ 5 s) is intended, the requirement must be updated with a numeric bound before this change can be verified against it."
+    }
+  ],
+  "human_override": null
+}
