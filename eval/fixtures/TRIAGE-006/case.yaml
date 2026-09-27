@@ -1,6 +1,8 @@
 case_id: TRIAGE-006
+source_registry: eval/fixtures/TRIAGE-006/sources.yaml
 source_files:
-  - eval/fixtures/TRIAGE-006/source.md
+  - eval/fixtures/TRIAGE-006/source_a.md
+  - eval/fixtures/TRIAGE-006/source_b.md
 changed_files:
   - eval/fixtures/TRIAGE-006/implementation.py
   - eval/fixtures/TRIAGE-006/tests.py

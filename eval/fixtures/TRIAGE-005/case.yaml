@@ -1,4 +1,5 @@
 case_id: TRIAGE-005
+source_registry: eval/fixtures/TRIAGE-005/sources.yaml
 source_files:
   - eval/fixtures/TRIAGE-005/source.md
 changed_files:

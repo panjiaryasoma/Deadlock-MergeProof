@@ -1,0 +1,9 @@
+sources:
+  - source_id: SRC-TRIAGE-001-PRD
+    source_type: PRD
+    location: eval/fixtures/TRIAGE-001/source.md
+    authority: product_contract
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-001/implementation.py
+    supersedes: null

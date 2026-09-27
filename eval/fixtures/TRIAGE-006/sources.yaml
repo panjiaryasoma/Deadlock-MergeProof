@@ -1,0 +1,17 @@
+sources:
+  - source_id: SRC-TRIAGE-006-ADR-A
+    source_type: ADR
+    location: eval/fixtures/TRIAGE-006/source_a.md
+    authority: architecture_contract
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-006/implementation.py
+    supersedes: null
+  - source_id: SRC-TRIAGE-006-ADR-B
+    source_type: ADR
+    location: eval/fixtures/TRIAGE-006/source_b.md
+    authority: architecture_contract
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-006/implementation.py
+    supersedes: null

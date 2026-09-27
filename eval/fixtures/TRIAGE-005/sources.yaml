@@ -1,0 +1,9 @@
+sources:
+  - source_id: SRC-TRIAGE-005-PRD
+    source_type: CHANGE_ACCEPTANCE_CRITERIA
+    location: eval/fixtures/TRIAGE-005/source.md
+    authority: acceptance_contract
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-005/implementation.py
+    supersedes: null

@@ -1,0 +1,17 @@
+sources:
+  - source_id: SRC-TRIAGE-007-PRD
+    source_type: PRD
+    location: eval/fixtures/TRIAGE-007/project_source.md
+    authority: product_contract
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-007/implementation.py
+    supersedes: null
+  - source_id: SRC-TRIAGE-007-EXT
+    source_type: EXTERNAL_GUIDANCE
+    location: eval/fixtures/TRIAGE-007/external_guidance.md
+    authority: external_guidance
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-007/implementation.py
+    supersedes: null

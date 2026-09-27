@@ -1,0 +1,9 @@
+sources:
+  - source_id: SRC-TRIAGE-002-CONTRACT
+    source_type: MACHINE_READABLE_CONTRACT
+    location: eval/fixtures/TRIAGE-002/source.md
+    authority: api_contract
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-002/implementation.py
+    supersedes: null

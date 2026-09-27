@@ -1,0 +1,11 @@
+--- a/eval/fixtures/TRIAGE-003/implementation.py
++++ b/eval/fixtures/TRIAGE-003/implementation.py
+@@
+-def _normalize(value: str) -> str:
++def _canonicalize(value: str) -> str:
+     return value.strip().lower()
+ 
+ 
+ def normalize_name(value: str) -> str:
+-    return _normalize(value)
++    return _canonicalize(value)

@@ -1,8 +1,10 @@
 case_id: TRIAGE-003
+source_registry: eval/fixtures/TRIAGE-003/sources.yaml
 source_files:
   - eval/fixtures/TRIAGE-003/source.md
 changed_files:
   - eval/fixtures/TRIAGE-003/implementation.py
   - eval/fixtures/TRIAGE-003/tests.py
+change_evidence: eval/fixtures/TRIAGE-003/change.patch
 application_entrypoint: eval/fixtures/TRIAGE-003/implementation.py
 test_command: python eval/fixtures/TRIAGE-003/tests.py

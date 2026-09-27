@@ -1,0 +1,18 @@
+sources:
+  - source_id: SRC-TRIAGE-008-OLD
+    source_type: PRD
+    location: eval/fixtures/TRIAGE-008/old_prd.md
+    authority: product_contract
+    state: SUPERSEDED
+    scope:
+      - eval/fixtures/TRIAGE-008/implementation.py
+    supersedes: null
+  - source_id: SRC-TRIAGE-008-ADR
+    source_type: ADR
+    location: eval/fixtures/TRIAGE-008/active_adr.md
+    authority: architecture_contract
+    state: ACTIVE
+    scope:
+      - eval/fixtures/TRIAGE-008/implementation.py
+    supersedes:
+      - SRC-TRIAGE-008-OLD

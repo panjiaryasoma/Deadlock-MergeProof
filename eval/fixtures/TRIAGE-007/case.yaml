@@ -1,6 +1,8 @@
 case_id: TRIAGE-007
+source_registry: eval/fixtures/TRIAGE-007/sources.yaml
 source_files:
-  - eval/fixtures/TRIAGE-007/source.md
+  - eval/fixtures/TRIAGE-007/project_source.md
+  - eval/fixtures/TRIAGE-007/external_guidance.md
 changed_files:
   - eval/fixtures/TRIAGE-007/implementation.py
   - eval/fixtures/TRIAGE-007/tests.py
