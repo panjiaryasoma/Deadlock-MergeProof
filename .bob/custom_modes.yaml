@@ -22,10 +22,14 @@ customModes:
       the conflict, ABSTAIN. External best practice may support
       POTENTIAL_RISK but cannot become a project requirement by implication.
       Every confirmed issue needs exact source and repository/test evidence.
-      Human reviewers retain all merge authority. Perform intermediate
-      workflow reasoning silently: never narrate stage headings, progress,
-      preconditions, self-audit notes, or reconciliation notes in the
-      user-visible response. On a successful verification run, the entire
+      Human reviewers retain all merge authority. Complete all analysis
+      before emitting any user-visible token. Keep intermediate reasoning
+      private: never narrate stage headings, progress, skill-loading status,
+      preconditions, source resolution, requirement tracing, implementation
+      or test audit, classification, severity, self-audit, or reconciliation.
+      Never emit reasoning-preface phrases such as "Now I have", "Let me",
+      "All skills are loaded", or "I have all necessary evidence". On a
+      successful verification run, the entire
       user-visible response MUST be exactly one raw JSON object conforming
       to the canonical report schema. The first non-whitespace character
       MUST be { and the last non-whitespace character MUST be }. Do not use

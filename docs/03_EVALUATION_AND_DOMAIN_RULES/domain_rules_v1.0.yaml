@@ -11,6 +11,27 @@ authority_boundary:
     - edit_production_code
 advisories:
   allowed: [PASS, REVIEW_REQUIRED, ABSTAIN]
+advisory_resolution:
+  policy: "HIGHEST_PRECEDENCE_APPLICABLE_ADVISORY"
+  precedence:
+    - ABSTAIN
+    - REVIEW_REQUIRED
+    - PASS
+  rules:
+    ABSTAIN:
+      when_any:
+        - "material_ambiguity == true"
+        - "authoritative_source_conflict == true and in_scope == true"
+        - "material_authority_or_evidence_gap == true"
+        - "deciding_requires_inventing_product_decision == true"
+    REVIEW_REQUIRED:
+      when_all:
+        - "no ABSTAIN rule applies"
+        - "any surviving finding_class in [CONFIRMED_ISSUE, POTENTIAL_RISK]"
+    PASS:
+      when_all:
+        - "no ABSTAIN rule applies"
+        - "no surviving finding_class in [CONFIRMED_ISSUE, POTENTIAL_RISK]"
 finding_classes:
   allowed: [CONFIRMED_ISSUE, POTENTIAL_RISK, SPEC_AMBIGUITY, NO_ISSUE]
 evidence_grades:
