@@ -5,6 +5,8 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+import yaml
+
 from demo.src.deadline import is_submission_expired
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +35,19 @@ def test_demo_visible_tree_does_not_contain_expected_labels() -> None:
 
     for token in forbidden:
         assert token not in text
+
+
+
+def test_demo_case_paths_are_workspace_root_relative_and_exist() -> None:
+    case = yaml.safe_load((DEMO_ROOT / "case.yaml").read_text(encoding="utf-8"))
+
+    for relative_path in case["source_files"]:
+        assert (REPO_ROOT / relative_path).is_file(), relative_path
+
+    for relative_path in case["changed_files"]:
+        assert (REPO_ROOT / relative_path).is_file(), relative_path
+
+    assert (REPO_ROOT / case["application_entrypoint"]).is_file()
 
 
 def test_demo_tests_are_runnable() -> None:

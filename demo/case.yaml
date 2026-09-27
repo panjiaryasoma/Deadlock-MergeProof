@@ -1,8 +1,8 @@
 case_id: INTEGRATION-001
 source_files:
-  - docs/submission_requirements.md
+  - demo/docs/submission_requirements.md
 changed_files:
-  - src/deadline.py
-  - tests/test_deadline.py
-application_entrypoint: app.py
+  - demo/src/deadline.py
+  - demo/tests/test_deadline.py
+application_entrypoint: demo/app.py
 test_command: python -m unittest discover -s demo/tests -t . -v
