@@ -610,3 +610,32 @@ def test_triage_evaluator_accepts_bob_colon_line_locators(tmp_path: Path) -> Non
     )
 
     assert "ANCHOR_LOCATOR_UNRESOLVED" not in codes
+
+
+def test_triage_evaluator_accepts_patch_hunk_locator(tmp_path: Path) -> None:
+    case_id = "TRIAGE-003"
+    workspace = _prepare(case_id, tmp_path / "triage")
+    context = _load_yaml(workspace / "MERGEPROOF_RUN_CONTEXT.yaml")
+    expectation = TriageExpectation.from_mapping(
+        _load_yaml(REPO_ROOT / "eval" / "expected" / f"{case_id}.yaml")
+    )
+    report = _synthetic_report(case_id, workspace, expectation, context)
+    payload = json.loads(report.model_dump_json())
+    case = _workspace_case(workspace, case_id)
+
+    payload["findings"][0]["repo_anchors"].append(
+        {
+            "artifact": case["change_evidence"],
+            "locator": "@@",
+        }
+    )
+
+    bob_style = MergeProofReport.model_validate(payload)
+    codes = _evaluation_codes(
+        bob_style,
+        expectation,
+        context,
+        workspace,
+    )
+
+    assert "ANCHOR_LOCATOR_UNRESOLVED" not in codes

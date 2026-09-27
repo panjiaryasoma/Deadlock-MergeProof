@@ -120,10 +120,17 @@ def _source_snapshot(source: Source) -> dict[str, Any]:
 
 def _locator_resolves(path: Path, locator: str) -> bool:
     locator = locator.strip()
+    text = path.read_text(encoding="utf-8")
+
+    if (
+        locator == "@@"
+        and path.suffix.casefold() in {".patch", ".diff"}
+        and any(line.startswith("@@") for line in text.splitlines())
+    ):
+        return True
+
     if len(locator) < 3:
         return False
-
-    text = path.read_text(encoding="utf-8")
     line_match = LINE_LOCATOR.fullmatch(locator)
     if line_match is not None:
         start = int(line_match.group(1))
