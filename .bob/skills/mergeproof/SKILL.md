@@ -53,6 +53,24 @@ Do not use evaluator or expected-output material.
     `conflict-abstention` again using corrected evidence.
 11. Run `report-synthesis` using the latest advisory state.
 
+## Advisory resolution gate
+
+Before report synthesis, require `conflict-abstention` to apply
+`advisory_resolution` from
+`docs/03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml`.
+
+Resolve advisories in precedence order: `ABSTAIN` > `REVIEW_REQUIRED` > `PASS`.
+
+In particular:
+- material requirement ambiguity is independently sufficient for `ABSTAIN`;
+- unresolved in-scope authoritative source conflict is `ABSTAIN`;
+- if no ABSTAIN condition applies and any surviving finding is
+  `CONFIRMED_ISSUE` or `POTENTIAL_RISK`, use `REVIEW_REQUIRED`;
+- use `PASS` only when neither of those conditions applies.
+
+If the preliminary advisory contradicts these rules, run
+`conflict-abstention` again before report synthesis.
+
 Keep documented expected behavior, observed implementation, observed test
 coverage, authority resolution, engineering opinion, and unresolved uncertainty
 separate until classification.
@@ -71,6 +89,9 @@ Return exactly one JSON object conforming to
 
 The response MUST be raw JSON only. It MUST start with `{` and end with `}`.
 Do not add any text before or after it and do not use Markdown code fences.
+
+Before sending, construct the JSON object first and inspect the complete response.
+If any text exists outside the JSON object, rewrite the response as JSON only.
 
 Populate:
 - `report_version` from run-context `report_schema_version`;
