@@ -1,0 +1,126 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-007-0a219d490eb6-2026-09-27T143756Z",
+  "generated_at": "2026-09-27T14:37:56Z",
+  "advisory": "REVIEW_REQUIRED",
+  "repository": {
+    "commit_sha": "0a219d490eb62c331a9bb8e9f5d9d033b87f2816",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-007/implementation.py",
+      "eval/fixtures/TRIAGE-007/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-007-PRD",
+      "source_type": "PRD",
+      "location": "eval/fixtures/TRIAGE-007/project_source.md",
+      "authority": "product_contract",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-007/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    },
+    {
+      "source_id": "SRC-TRIAGE-007-EXT",
+      "source_type": "EXTERNAL_GUIDANCE",
+      "location": "eval/fixtures/TRIAGE-007/external_guidance.md",
+      "authority": "external_guidance",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-007/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-007",
+      "source_id": "SRC-TRIAGE-007-PRD",
+      "statement": "The handler reads the optional `name` field and returns a greeting. This project source does not require runtime schema validation.",
+      "scope": [
+        "eval/fixtures/TRIAGE-007/implementation.py"
+      ],
+      "criticality": "LOW",
+      "ambiguity": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "NO_ISSUE",
+      "finding_type": "HARMLESS_REFACTOR",
+      "title": "Implementation correctly reads optional `name` field and returns greeting",
+      "evidence_grade": "DIRECT",
+      "severity": "NONE",
+      "requirement_ids": ["REQ-TRIAGE-007"],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-007/project_source.md",
+          "locator": "REQ-TRIAGE-007",
+          "excerpt": "The handler reads the optional `name` field and returns a greeting."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-007/implementation.py",
+          "locator": "line 4-6",
+          "excerpt": "def greet(payload: dict[str, object]) -> str:\n    name = payload.get(\"name\", \"world\")\n    return f\"Hello, {name}\""
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-007/tests.py",
+          "locator": "GreetingTests.test_optional_name",
+          "excerpt": "self.assertEqual(greet({\"name\": \"Ada\"}), \"Hello, Ada\")"
+        },
+        {
+          "artifact": "eval/fixtures/TRIAGE-007/tests.py",
+          "locator": "GreetingTests.test_default_name",
+          "excerpt": "self.assertEqual(greet({}), \"Hello, world\")"
+        }
+      ],
+      "rationale": "greet() uses payload.get(\"name\", \"world\") to read the optional `name` field and returns f\"Hello, {name}\". Both the named-field path and the default path are exercised by tests. The implementation directly satisfies REQ-TRIAGE-007 with no observable drift. DR-006 conditions are met: behavioral contract is unchanged, tests are green, and no requirement drift is present.",
+      "suggested_human_check": null
+    },
+    {
+      "finding_id": "F-002",
+      "finding_class": "POTENTIAL_RISK",
+      "finding_type": "UNSUPPORTED_BEST_PRACTICE_CLAIM",
+      "title": "External guidance recommends runtime schema validation; not required by local contract",
+      "evidence_grade": "INFERRED",
+      "severity": "MEDIUM",
+      "requirement_ids": [],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-007/external_guidance.md",
+          "locator": "SRC-TRIAGE-007-EXT / Guidance",
+          "excerpt": "External guidance recommends validating untrusted request payloads against an explicit runtime schema."
+        },
+        {
+          "artifact": "eval/fixtures/TRIAGE-007/project_source.md",
+          "locator": "REQ-TRIAGE-007 / Note",
+          "excerpt": "This project source does not require runtime schema validation."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-007/implementation.py",
+          "locator": "line 4-6",
+          "excerpt": "def greet(payload: dict[str, object]) -> str:\n    name = payload.get(\"name\", \"world\")\n    return f\"Hello, {name}\""
+        }
+      ],
+      "test_anchors": [],
+      "rationale": "SRC-TRIAGE-007-EXT (authority: external_guidance) recommends validating untrusted request payloads against an explicit runtime schema. The implementation performs no schema validation. However, SRC-TRIAGE-007-PRD (authority: product_contract) explicitly states this project source does not require runtime schema validation. DR-004 forbids classifying this as CONFIRMED_ISSUE because only external guidance supports the claim. DR-012 applies: POTENTIAL_RISK with finding_type UNSUPPORTED_BEST_PRACTICE_CLAIM and only_external_guidance_supports_claim == true yields severity MEDIUM. The PRD note does not constitute an authoritative conflict — it is an explicit scope exclusion that resolves the tension. No ABSTAIN trigger arises.",
+      "suggested_human_check": "Confirm that the absence of runtime schema validation is an intentional, accepted risk for the deployment context of this handler."
+    }
+  ],
+  "human_override": null
+}
