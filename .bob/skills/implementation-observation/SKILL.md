@@ -8,6 +8,10 @@ description: Determine what changed implementation actually does, including edge
 Inspect only the requested changed-file scope unless a directly referenced dependency
 is required to understand behavior.
 
+If the case descriptor provides `change_evidence`, inspect that artifact before
+classifying the kind of change. Use it to distinguish a refactor from a behavioral
+change; do not infer a rename or prior implementation state that is not evidenced.
+
 Describe:
 - control flow;
 - validation behavior;

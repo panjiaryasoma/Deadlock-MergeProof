@@ -1,6 +1,8 @@
 # Block 5 TRIAGE Acceptance Runbook
 
-Block 5 uses the frozen TRIAGE-001 through TRIAGE-008 suite.
+Block 5 uses TRIAGE-001 through TRIAGE-008 with the pre-measurement consistency
+corrections documented in
+`docs/05_PREPRODUCTION/02_TRIAGE_ACCEPTANCE/FIXTURE_CONSISTENCY_CORRECTIONS.md`.
 
 ## 1. Prepare all isolated workspaces
 
@@ -21,6 +23,8 @@ build/triage/TRIAGE-008
 Each workspace contains only:
 - MergeProof Bob configuration;
 - the selected analysis fixture;
+- its canonical source registry;
+- optional change evidence when the scenario requires it;
 - active domain/schema/output contracts;
 - per-run provenance.
 
@@ -51,10 +55,14 @@ The evaluator checks:
 - Block 2 structural and semantic validity;
 - run provenance;
 - exact registered source-ID set;
+- source type/state/authority/scope/supersession/location against the source registry;
 - expected advisory;
-- presence of the frozen expected finding class/type/severity tuple;
-- source evidence on the expected finding;
-- existence of cited source/repository/test artifacts inside the isolated workspace.
+- frozen expected finding class/type/severity tuple;
+- source anchors point to registered source locations;
+- repository anchors stay in evaluated changed-file scope;
+- anchor locators resolve against their artifacts;
+- source-conflict findings cite both active sides;
+- cited artifacts exist inside the isolated workspace.
 
 ## 4. Evaluate all eight
 

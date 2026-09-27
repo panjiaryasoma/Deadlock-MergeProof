@@ -5,15 +5,21 @@ description: Inventory project sources and resolve lifecycle state, supersession
 
 # Source Authority
 
-For each relevant source capture the canonical source facts:
+When the case descriptor provides `source_registry`, read it before resolving
+source governance.
 
+The registry is canonical for source metadata:
 - `source_id`
 - `source_type`
 - workspace-root-relative `location`
-- declared `authority` string
+- declared `authority`
 - declared lifecycle `state`
 - declared `scope`
-- version/date, supersession, and content hash when present
+- declared `supersedes`
+
+Source documents remain authoritative for their requirement/guidance statements.
+If a source document materially disagrees with its registry metadata, surface the
+inconsistency rather than silently choosing one representation.
 
 Resolution order:
 
@@ -24,6 +30,9 @@ Resolution order:
 
 Never choose a source merely because it is newer, an ADR, machine-readable,
 or more formal unless project governance explicitly says so.
+
+Two active sources at the same precedence tier, same applicable scope, and with
+no supersession/tie-breaker remain unresolved when their requirements conflict.
 
 ## Important separation
 

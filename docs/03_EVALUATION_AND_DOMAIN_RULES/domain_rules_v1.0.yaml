@@ -81,6 +81,16 @@ rules:
     forbid_fields:
       - llm_confidence_percent
       - probability_correct
+  - id: DR-011
+    name: spec_ambiguity_has_no_issue_severity
+    if: "finding_class == SPEC_AMBIGUITY"
+    then:
+      severity: NONE
+  - id: DR-012
+    name: unsupported_best_practice_risk_severity
+    if: "finding_class == POTENTIAL_RISK and finding_type == UNSUPPORTED_BEST_PRACTICE_CLAIM and only_external_guidance_supports_claim == true"
+    then:
+      severity: MEDIUM
 severity_rubric:
   CRITICAL:
     any:

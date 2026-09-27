@@ -1,12 +1,34 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from .enums import Advisory, FindingClass, FindingType, Severity
-from .models import MergeProofReport
+from .models import MergeProofReport, Source
 from .validator import validate_report
+
+LINE_LOCATOR = re.compile(
+    r"^(?:line|lines|l)\s*(\d+)(?:\s*[-:]\s*(\d+))?$",
+    re.IGNORECASE,
+)
+LOCATOR_TOKEN = re.compile(r"[A-Za-z_][A-Za-z0-9_-]{2,}")
+GENERIC_LOCATOR_TOKENS = {
+    "class",
+    "function",
+    "implementation",
+    "line",
+    "lines",
+    "requirement",
+    "section",
+    "source",
+    "symbol",
+    "test",
+    "tests",
+}
 
 
 @dataclass(frozen=True)
@@ -49,6 +71,78 @@ def _workspace_file(workspace: Path, artifact: str) -> Path | None:
     return candidate if candidate.is_file() else None
 
 
+def _workspace_yaml(workspace: Path, artifact: str) -> dict[str, Any] | None:
+    path = _workspace_file(workspace, artifact)
+    if path is None:
+        return None
+    try:
+        payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _registered_sources(
+    workspace: Path,
+    run_context: dict[str, Any],
+) -> list[dict[str, Any]] | None:
+    case_payload = _workspace_yaml(workspace, str(run_context.get("case_descriptor", "")))
+    if case_payload is None:
+        return None
+
+    registry_path = case_payload.get("source_registry")
+    if not isinstance(registry_path, str):
+        return None
+
+    registry = _workspace_yaml(workspace, registry_path)
+    if registry is None:
+        return None
+
+    sources = registry.get("sources")
+    if not isinstance(sources, list) or not sources:
+        return None
+    if not all(isinstance(source, dict) for source in sources):
+        return None
+    return sources
+
+
+def _source_snapshot(source: Source) -> dict[str, Any]:
+    return {
+        "source_id": source.source_id,
+        "source_type": source.source_type.value,
+        "location": source.location,
+        "authority": source.authority,
+        "state": source.state.value,
+        "scope": source.scope,
+        "supersedes": source.supersedes,
+    }
+
+
+def _locator_resolves(path: Path, locator: str) -> bool:
+    locator = locator.strip()
+    if len(locator) < 3:
+        return False
+
+    text = path.read_text(encoding="utf-8")
+    line_match = LINE_LOCATOR.fullmatch(locator)
+    if line_match is not None:
+        start = int(line_match.group(1))
+        end = int(line_match.group(2) or start)
+        line_count = len(text.splitlines())
+        return 1 <= start <= end <= line_count
+
+    if locator.casefold() in text.casefold():
+        return True
+
+    tokens = [
+        token
+        for token in LOCATOR_TOKEN.findall(locator)
+        if token.casefold() not in GENERIC_LOCATOR_TOKENS
+    ]
+    lowered = text.casefold()
+    return any(token.casefold() in lowered for token in tokens)
+
+
 def evaluate_triage_report(
     report: MergeProofReport,
     expectation: TriageExpectation,
@@ -89,16 +183,52 @@ def evaluate_triage_report(
                 )
             )
 
+    registered = _registered_sources(workspace, run_context)
+    if registered is None:
+        issues.append(
+            AcceptanceIssue(
+                "SOURCE_REGISTRY_INVALID",
+                "Case source registry is missing or malformed inside the workspace.",
+            )
+        )
+        return issues
+
+    expected_by_id = {str(source["source_id"]): source for source in registered}
     report_source_ids = {source.source_id for source in report.sources}
     context_source_ids = set(run_context.get("source_ids", []))
-    if report_source_ids != context_source_ids:
+    registry_source_ids = set(expected_by_id)
+
+    if report_source_ids != context_source_ids or report_source_ids != registry_source_ids:
         issues.append(
             AcceptanceIssue(
                 "SOURCE_SET_MISMATCH",
-                f"report source IDs {sorted(report_source_ids)!r} do not match "
-                f"run context {sorted(context_source_ids)!r}.",
+                f"report={sorted(report_source_ids)!r}, "
+                f"context={sorted(context_source_ids)!r}, "
+                f"registry={sorted(registry_source_ids)!r}.",
             )
         )
+
+    for source in report.sources:
+        expected_source = expected_by_id.get(source.source_id)
+        if expected_source is None:
+            continue
+        expected_snapshot = {
+            "source_id": str(expected_source["source_id"]),
+            "source_type": str(expected_source["source_type"]),
+            "location": str(expected_source["location"]),
+            "authority": str(expected_source["authority"]),
+            "state": str(expected_source["state"]),
+            "scope": list(expected_source["scope"]),
+            "supersedes": expected_source.get("supersedes"),
+        }
+        actual_snapshot = _source_snapshot(source)
+        if actual_snapshot != expected_snapshot:
+            issues.append(
+                AcceptanceIssue(
+                    "SOURCE_METADATA_MISMATCH",
+                    f"{source.source_id} metadata does not match the frozen source registry.",
+                )
+            )
 
     if report.advisory is not expectation.advisory:
         issues.append(
@@ -134,6 +264,17 @@ def evaluate_triage_report(
             )
         )
 
+    registered_locations = {
+        str(source["location"])
+        for source in registered
+    }
+    active_locations = {
+        str(source["location"])
+        for source in registered
+        if str(source["state"]) == "ACTIVE"
+    }
+    changed_files = set(run_context.get("changed_files", []))
+
     for source in report.sources:
         if _workspace_file(workspace, source.location) is None:
             issues.append(
@@ -145,17 +286,62 @@ def evaluate_triage_report(
             )
 
     for finding in report.findings:
+        for anchor in finding.repo_anchors:
+            if anchor.artifact not in changed_files:
+                issues.append(
+                    AcceptanceIssue(
+                        "REPO_ANCHOR_OUTSIDE_CHANGE_SCOPE",
+                        f"{finding.finding_id} repository anchor {anchor.artifact!r} "
+                        "is not in the evaluated changed-file scope.",
+                    )
+                )
+
+        for anchor in finding.source_anchors:
+            if anchor.artifact not in registered_locations:
+                issues.append(
+                    AcceptanceIssue(
+                        "SOURCE_ANCHOR_NOT_REGISTERED",
+                        f"{finding.finding_id} source anchor {anchor.artifact!r} "
+                        "does not point to a registered source location.",
+                    )
+                )
+
+        if finding.finding_type is FindingType.SOURCE_CONFLICT:
+            anchored_sources = {
+                anchor.artifact
+                for anchor in finding.source_anchors
+                if anchor.artifact in registered_locations
+            }
+            if len(active_locations) < 2 or not active_locations.issubset(anchored_sources):
+                issues.append(
+                    AcceptanceIssue(
+                        "SOURCE_CONFLICT_EVIDENCE_INCOMPLETE",
+                        f"{finding.finding_id} must cite both active sides of the "
+                        "registered source conflict.",
+                    )
+                )
+
         for anchor in (
             *finding.repo_anchors,
             *finding.source_anchors,
             *finding.test_anchors,
         ):
-            if _workspace_file(workspace, anchor.artifact) is None:
+            artifact = _workspace_file(workspace, anchor.artifact)
+            if artifact is None:
                 issues.append(
                     AcceptanceIssue(
                         "ANCHOR_ARTIFACT_MISSING",
                         f"{finding.finding_id} anchor points to missing workspace artifact "
                         f"{anchor.artifact!r}.",
+                    )
+                )
+                continue
+            if not _locator_resolves(artifact, anchor.locator):
+                issues.append(
+                    AcceptanceIssue(
+                        "ANCHOR_LOCATOR_UNRESOLVED",
+                        f"{finding.finding_id} locator {anchor.locator!r} does not "
+                        f"resolve against {anchor.artifact!r}.",
                     )
                 )
 

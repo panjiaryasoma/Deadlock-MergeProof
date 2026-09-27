@@ -23,8 +23,10 @@ Before analysis, require:
 
 Read the case descriptor named by `case_descriptor`.
 Treat all case paths as workspace-root-relative.
-Use `source_files` as the candidate source inventory and `changed_files` as
-the exact requested change scope.
+Use `source_files` as the candidate source inventory, `source_registry` as
+canonical source metadata when present, and `changed_files` as the exact
+requested change scope. Inspect optional `change_evidence` before claiming a
+specific change type such as a refactor.
 
 Read `output_contract_addendum` when present.
 
@@ -71,7 +73,7 @@ Populate:
 - `run_id` from run context;
 - `repository.commit_sha` from `repository_commit_sha`;
 - `repository.changed_files` from run-context `changed_files`;
-- source fields from inspected source metadata;
+- source fields from the registered source metadata;
 - requirements only from documented source text;
 - anchors with workspace-root-relative artifact paths;
 - `generated_at` from run-context `timestamp`.

@@ -7,9 +7,9 @@ description: Describe impact and apply only frozen MergeProof severity values fr
 
 First describe impact factually.
 
-Then resolve severity from available frozen project rules.
+Then resolve severity from the active deterministic project rules.
 
-## Required source in isolated/demo workspace
+## Required sources
 
 Use:
 
@@ -21,9 +21,16 @@ Use:
 
 for legal report values.
 
-When running in the full repository, frozen triage fixtures may be used as additional
-acceptance evidence, but they are not required for severity resolution when the domain
-rules already map the finding deterministically.
+## Resolution order
+
+1. Apply any established `rules[].then.severity` mapping in
+   `domain_rules_v1.0.yaml`.
+2. If no exact rule applies, use the severity rubric in that same file.
+3. If neither path resolves severity deterministically, do not guess.
+
+This keeps ambiguity/source-conflict and unsupported-best-practice severity
+resolution inside one active rule source rather than scattering it across skills
+or hidden acceptance fixtures.
 
 Allowed report values:
 - `CRITICAL`
