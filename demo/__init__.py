@@ -1,0 +1,1 @@
+"""Seeded MergeProof demo package."""
