@@ -25,5 +25,15 @@ Mechanical contract:
 - no prose before the object
 - no prose after the object
 
+## Pre-emission gate
+
+Before sending a successful response, construct the canonical JSON object first
+and inspect the complete response. If the first non-whitespace character is not
+`{`, the last non-whitespace character is not `}`, or any text exists
+outside the object, rewrite the response as the JSON object only.
+
+Do not emit status or transition phrases such as "All skills are loaded",
+"Now I have all necessary evidence", "Let me work through", or "Let me compile".
+
 This rule constrains transport only. It does not change evidence, classification,
 severity, advisory, or human merge authority.
