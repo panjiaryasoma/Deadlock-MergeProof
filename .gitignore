@@ -8,6 +8,8 @@ build/
 *.egg-info/
 reports/*.json
 reports/*.md
+reports/**/*.json
+reports/**/*.md
 !reports/.gitkeep
 !reports/README.md
 .DS_Store
