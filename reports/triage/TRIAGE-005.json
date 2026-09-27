@@ -1,0 +1,76 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-005-5f8be04084ce-2026-09-27T134524Z",
+  "generated_at": "2026-09-27T13:45:24Z",
+  "advisory": "REVIEW_REQUIRED",
+  "repository": {
+    "commit_sha": "5f8be04084ce306c8718942ea303a356adaab0c7",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-005/implementation.py",
+      "eval/fixtures/TRIAGE-005/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-005-PRD",
+      "source_type": "CHANGE_ACCEPTANCE_CRITERIA",
+      "location": "eval/fixtures/TRIAGE-005/source.md",
+      "authority": "acceptance_contract",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-005/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-005",
+      "source_id": "SRC-TRIAGE-005-PRD",
+      "statement": "Looking up an unknown item ID returns HTTP status 404.",
+      "scope": [
+        "eval/fixtures/TRIAGE-005/implementation.py"
+      ],
+      "criticality": "MEDIUM",
+      "ambiguity": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "CONFIRMED_ISSUE",
+      "finding_type": "MISSING_ACCEPTANCE_TEST",
+      "title": "No test exercises the unknown-item-ID 404 acceptance boundary",
+      "evidence_grade": "DIRECT",
+      "severity": "MEDIUM",
+      "requirement_ids": ["REQ-TRIAGE-005"],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-005/source.md",
+          "locator": "REQ-TRIAGE-005",
+          "excerpt": "Looking up an unknown item ID returns HTTP status 404."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-005/tests.py",
+          "locator": "class GetItemTests",
+          "excerpt": "Only test_known_item_returns_200 is present; no test calls get_item_status with an unknown item ID or asserts the return value is 404."
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-005/tests.py",
+          "locator": "GetItemTests.test_known_item_returns_200",
+          "excerpt": "self.assertEqual(get_item_status(\"known\"), 200)"
+        }
+      ],
+      "rationale": "REQ-TRIAGE-005 (SRC-TRIAGE-005-PRD, authority: acceptance_contract, state: ACTIVE) requires that looking up an unknown item ID returns HTTP status 404. The implementation at eval/fixtures/TRIAGE-005/implementation.py line 8 correctly returns 404 for any item_id not in ITEMS. However, eval/fixtures/TRIAGE-005/tests.py contains only one test (test_known_item_returns_200), which exercises the 200 path. No test invokes get_item_status with an unknown ID or asserts a 404 return value. DR-007 applies: an explicit acceptance boundary exists and the matching test is missing. The finding type MISSING_ACCEPTANCE_TEST is the most specific applicable type under the domain rules precedence. Severity MEDIUM is confirmed by the severity rubric entry 'explicit acceptance scenario missing from tests' and corroborated by the requirement criticality MEDIUM.",
+      "suggested_human_check": "Add a test that calls get_item_status with an item ID not present in ITEMS and asserts the return value equals 404, covering the explicit acceptance boundary stated in REQ-TRIAGE-005."
+    }
+  ],
+  "human_override": null
+}
