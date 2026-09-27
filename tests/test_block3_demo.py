@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from demo.src.deadline import is_submission_expired
@@ -12,7 +12,7 @@ DEMO_ROOT = REPO_ROOT / "demo"
 
 
 def test_seeded_boundary_behavior_is_present_for_evaluator() -> None:
-    deadline = datetime(2026, 9, 27, 12, 0, tzinfo=timezone.utc)
+    deadline = datetime(2026, 9, 27, 12, 0, tzinfo=UTC)
 
     assert is_submission_expired(deadline, deadline) is False
 
