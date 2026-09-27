@@ -1,0 +1,102 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-002-5f8be04084ce-2026-09-27T134523Z",
+  "advisory": "REVIEW_REQUIRED",
+  "generated_at": "2026-09-27T13:45:23Z",
+  "repository": {
+    "commit_sha": "5f8be04084ce306c8718942ea303a356adaab0c7",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-002/implementation.py",
+      "eval/fixtures/TRIAGE-002/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-002-CONTRACT",
+      "source_type": "MACHINE_READABLE_CONTRACT",
+      "location": "eval/fixtures/TRIAGE-002/source.md",
+      "authority": "api_contract",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-002/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-002",
+      "source_id": "SRC-TRIAGE-002-CONTRACT",
+      "statement": "User creation input requires both `name` and `email`.",
+      "scope": [
+        "eval/fixtures/TRIAGE-002/implementation.py"
+      ],
+      "criticality": "HIGH",
+      "ambiguity": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "CONFIRMED_ISSUE",
+      "finding_type": "API_CONTRACT_DRIFT",
+      "title": "accepts_create_user validates only `name`; `email` field requirement is not enforced",
+      "evidence_grade": "DIRECT",
+      "severity": "HIGH",
+      "requirement_ids": ["REQ-TRIAGE-002"],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-002/source.md",
+          "locator": "REQ-TRIAGE-002",
+          "excerpt": "User creation input requires both `name` and `email`."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-002/implementation.py",
+          "locator": "accepts_create_user:5",
+          "excerpt": "return \"name\" in payload"
+        }
+      ],
+      "test_anchors": [],
+      "rationale": "REQ-TRIAGE-002 (SRC-TRIAGE-002-CONTRACT, authority: api_contract, state: ACTIVE) states that user creation input requires both `name` and `email`. The implementation `accepts_create_user` at line 5 checks only `\"name\" in payload` and ignores `email` entirely. A payload containing only `{\"name\": \"Ada\"}` is accepted by the implementation despite missing the required `email` field. This is a direct, demonstrated mismatch against an applicable authoritative requirement. The finding type API_CONTRACT_DRIFT is most specific under the domain rules because the required field shape of the API contract differs from what is implemented. Severity HIGH is assigned per the rubric rule `confirmed backward-incompatible API/contract change`.",
+      "suggested_human_check": "Verify whether `email` validation was intentionally deferred or is a genuine omission; confirm the contract has not been amended outside this workspace."
+    },
+    {
+      "finding_id": "F-002",
+      "finding_class": "CONFIRMED_ISSUE",
+      "finding_type": "MISSING_ACCEPTANCE_TEST",
+      "title": "No test exercises rejection of a payload missing `email`",
+      "evidence_grade": "DIRECT",
+      "severity": "MEDIUM",
+      "requirement_ids": ["REQ-TRIAGE-002"],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-002/source.md",
+          "locator": "REQ-TRIAGE-002",
+          "excerpt": "User creation input requires both `name` and `email`."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-002/tests.py",
+          "locator": "CreateUserTests",
+          "excerpt": "test_complete_payload_is_accepted"
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-002/tests.py",
+          "locator": "CreateUserTests.test_complete_payload_is_accepted:9-10",
+          "excerpt": "self.assertTrue(accepts_create_user({\"name\": \"Ada\", \"email\": \"ada@example.test\"}))"
+        }
+      ],
+      "rationale": "REQ-TRIAGE-002 requires both `name` and `email`. The sole test `test_complete_payload_is_accepted` verifies acceptance of a fully-valid payload but does not test that a payload containing only `name` (without `email`) is rejected, nor that a payload containing only `email` (without `name`) is rejected. DR-007 applies: an explicit acceptance boundary exists (both fields are required) and no matching negative/boundary test is present. Severity MEDIUM per rubric: `explicit acceptance scenario missing from tests`.",
+      "suggested_human_check": "Add tests asserting that payloads missing `email`, missing `name`, or missing both are rejected."
+    }
+  ],
+  "human_override": null
+}
