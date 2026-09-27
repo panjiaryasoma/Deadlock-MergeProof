@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -88,10 +89,22 @@ def test_demo_run_context_is_grounded_and_workspace_local(tmp_path: Path) -> Non
     ).stdout.strip()
 
     assert context["repository_commit_sha"] == expected_sha
+    assert context["run_id"].startswith(f"mergeproof-{expected_sha[:12]}-")
+    assert context["changed_files"] == [
+        "demo/src/deadline.py",
+        "demo/tests/test_deadline.py",
+    ]
+    assert context["source_ids"] == ["SRC-PRD-001"]
+    assert context["bob_mode_version"] == "1.0.0"
+    assert context["skill_version"] == "1.0.0"
+    assert context["report_schema_version"] == "1.0"
+    assert datetime.fromisoformat(context["timestamp"].replace("Z", "+00:00"))
     assert context["case_descriptor"] == "demo/case.yaml"
     assert (output / context["case_descriptor"]).is_file()
     assert (output / context["report_schema"]).is_file()
     assert (output / context["domain_rules"]).is_file()
+    assert (output / context["output_contract_addendum"]).is_file()
+    assert (output / ".bob/manifest.yaml").is_file()
 
 
 def test_demo_bob_prompt_does_not_reveal_expected_outcome() -> None:
@@ -105,3 +118,33 @@ def test_demo_bob_prompt_does_not_reveal_expected_outcome() -> None:
     )
     for token in forbidden:
         assert token not in prompt
+
+
+def test_active_output_addendum_resolves_json_summary_stage_conflict() -> None:
+    addendum = _read(
+        "docs/05_PREPRODUCTION/01_CONTRACTS_ACTIVE/"
+        "OUTPUT_AND_RUN_RECORD_ADDENDUM_v1.1.md"
+    )
+
+    assert "Blocks 4 through 6" in addendum
+    assert "FR-014 remains an MVP release requirement" in addendum
+    assert "Block 7" in addendum
+    assert "MUST NOT introduce additional findings" in addendum
+
+
+def test_report_synthesis_uses_grounded_run_context_fields() -> None:
+    synthesis = _read(".bob/skills/report-synthesis/SKILL.md")
+
+    for field in (
+        "run_id",
+        "repository_commit_sha",
+        "changed_files",
+        "source_ids",
+        "bob_mode_version",
+        "skill_version",
+        "timestamp",
+        "report_schema_version",
+    ):
+        assert field in synthesis
+
+    assert "workflow setup error" in synthesis
