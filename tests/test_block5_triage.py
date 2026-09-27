@@ -217,7 +217,7 @@ def test_prepare_all_triage_workspaces_hides_ground_truth(tmp_path: Path) -> Non
         assert context["source_ids"]
         assert context["source_registry"]
         assert context["bob_mode_version"] == "1.0.0"
-        assert context["skill_version"] == "1.0.2"
+        assert context["skill_version"] == "1.0.3"
         assert context["report_schema_version"] == "1.0"
         assert (workspace / context["source_registry"]).is_file()
 
@@ -639,3 +639,35 @@ def test_triage_evaluator_accepts_patch_hunk_locator(tmp_path: Path) -> None:
     )
 
     assert "ANCHOR_LOCATOR_UNRESOLVED" not in codes
+
+
+def test_advisory_resolution_policy_is_explicit_and_ordered() -> None:
+    payload = _load_yaml(
+        REPO_ROOT / "docs/03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml"
+    )
+    policy = payload["advisory_resolution"]
+
+    assert policy["policy"] == "HIGHEST_PRECEDENCE_APPLICABLE_ADVISORY"
+    assert policy["precedence"] == ["ABSTAIN", "REVIEW_REQUIRED", "PASS"]
+
+    abstain_rules = " ".join(policy["rules"]["ABSTAIN"]["when_any"])
+    review_rules = " ".join(policy["rules"]["REVIEW_REQUIRED"]["when_all"])
+
+    assert "material_ambiguity == true" in abstain_rules
+    assert "authoritative_source_conflict == true" in abstain_rules
+    assert "CONFIRMED_ISSUE" in review_rules
+    assert "POTENTIAL_RISK" in review_rules
+
+
+def test_final_transport_gate_has_mechanical_rewrite_rule() -> None:
+    transport = (
+        REPO_ROOT / ".bob/rules-mergeproof/07-final-output-transport.md"
+    ).read_text(encoding="utf-8")
+    orchestrator = (
+        REPO_ROOT / ".bob/skills/mergeproof/SKILL.md"
+    ).read_text(encoding="utf-8")
+
+    assert "Pre-emission gate" in transport
+    assert "rewrite the response as the JSON object only" in transport
+    assert "All skills are loaded" in transport
+    assert "rewrite the response as JSON only" in orchestrator
