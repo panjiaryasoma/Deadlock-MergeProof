@@ -1,0 +1,83 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-003-5f8be04084ce-2026-09-27T134523Z",
+  "advisory": "PASS",
+  "generated_at": "2026-09-27T13:45:23Z",
+  "repository": {
+    "commit_sha": "5f8be04084ce306c8718942ea303a356adaab0c7",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-003/implementation.py",
+      "eval/fixtures/TRIAGE-003/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-003-PRD",
+      "source_type": "PRD",
+      "location": "eval/fixtures/TRIAGE-003/source.md",
+      "authority": "product_contract",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-003/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-003",
+      "source_id": "SRC-TRIAGE-003-PRD",
+      "statement": "normalize_name(value) trims surrounding whitespace and lowercases the result.",
+      "scope": [
+        "eval/fixtures/TRIAGE-003/implementation.py"
+      ],
+      "criticality": "LOW",
+      "ambiguity": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "NO_ISSUE",
+      "finding_type": "HARMLESS_REFACTOR",
+      "title": "Internal helper renamed from _normalize to _canonicalize; public behavior unchanged",
+      "evidence_grade": "DIRECT",
+      "severity": "NONE",
+      "requirement_ids": [
+        "REQ-TRIAGE-003"
+      ],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-003/source.md",
+          "locator": "REQ-TRIAGE-003",
+          "excerpt": "normalize_name(value) trims surrounding whitespace and lowercases the result."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-003/implementation.py",
+          "locator": "lines 4-9",
+          "excerpt": "def _canonicalize(value: str) -> str:\n    return value.strip().lower()\n\ndef normalize_name(value: str) -> str:\n    return _canonicalize(value)"
+        },
+        {
+          "artifact": "eval/fixtures/TRIAGE-003/change.patch",
+          "locator": "@@",
+          "excerpt": "-def _normalize(value: str) -> str:\n+def _canonicalize(value: str) -> str:\n     return value.strip().lower()"
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-003/tests.py",
+          "locator": "NormalizeNameTests.test_public_behavior_is_unchanged",
+          "excerpt": "self.assertEqual(normalize_name(\"  Ada Lovelace  \"), \"ada lovelace\")"
+        }
+      ],
+      "rationale": "The change renames the private helper _normalize to _canonicalize and updates the single call site in normalize_name. The public function signature, its behavior (value.strip().lower()), and its name are all unchanged. REQ-TRIAGE-003 mandates only the behavior of the public normalize_name function, which is fully satisfied: the implementation calls _canonicalize, which executes value.strip().lower(). The test exercises the public contract boundary (leading/trailing whitespace trimming and lowercasing) and passes. Change evidence (change.patch) confirms this is a pure internal rename with no behavioral delta. DR-006 applies: behavioral_contract_changed=false, tests_green=true, no_requirement_drift=true. Finding type HARMLESS_REFACTOR is the most specific applicable type per the domain_rules finding_type_selection policy.",
+      "suggested_human_check": null
+    }
+  ],
+  "human_override": null
+}
