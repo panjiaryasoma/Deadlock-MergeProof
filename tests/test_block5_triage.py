@@ -485,7 +485,7 @@ def test_finding_type_policy_prefers_specific_boundary_drift() -> None:
     assert "comparison operators differ" in " ".join(
         policy["rules"]["BOUNDARY_CONDITION_DRIFT"]["when"]
     )
-    assert "fallback" in " ".join(
+    assert "no more specific finding type above applies" in " ".join(
         policy["rules"]["REQUIREMENT_IMPLEMENTATION_MISMATCH"]["when"]
     )
 
