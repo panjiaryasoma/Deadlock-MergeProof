@@ -1,0 +1,108 @@
+{
+  "report_version": "1.0",
+  "run_id": "mergeproof-triage-001-5f8be04084ce-2026-09-27T134523Z",
+  "generated_at": "2026-09-27T13:45:23Z",
+  "advisory": "REVIEW_REQUIRED",
+  "repository": {
+    "commit_sha": "5f8be04084ce306c8718942ea303a356adaab0c7",
+    "changed_files": [
+      "eval/fixtures/TRIAGE-001/implementation.py",
+      "eval/fixtures/TRIAGE-001/tests.py"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "SRC-TRIAGE-001-PRD",
+      "source_type": "PRD",
+      "location": "eval/fixtures/TRIAGE-001/source.md",
+      "authority": "product_contract",
+      "state": "ACTIVE",
+      "scope": [
+        "eval/fixtures/TRIAGE-001/implementation.py"
+      ],
+      "supersedes": null,
+      "version": null,
+      "content_hash": null,
+      "effective_at": null
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "REQ-TRIAGE-001",
+      "source_id": "SRC-TRIAGE-001-PRD",
+      "statement": "A submission is expired when evaluated_at >= submission_deadline.",
+      "scope": [
+        "eval/fixtures/TRIAGE-001/implementation.py"
+      ],
+      "criticality": "HIGH",
+      "ambiguity": "NONE"
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "finding_class": "CONFIRMED_ISSUE",
+      "finding_type": "BOUNDARY_CONDITION_DRIFT",
+      "title": "Strict-greater-than operator excludes the deadline-equal boundary required by REQ-TRIAGE-001",
+      "severity": "HIGH",
+      "evidence_grade": "DIRECT",
+      "requirement_ids": [
+        "REQ-TRIAGE-001"
+      ],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-001/source.md",
+          "locator": "line:14",
+          "excerpt": "A submission is expired when evaluated_at >= submission_deadline."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-001/implementation.py",
+          "locator": "line:7",
+          "commit_sha": "5f8be04084ce306c8718942ea303a356adaab0c7",
+          "excerpt": "return evaluated_at > submission_deadline"
+        }
+      ],
+      "test_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-001/tests.py",
+          "locator": "line:13-17",
+          "excerpt": "test_before_deadline_is_open; test_after_deadline_is_expired — no test for evaluated_at == submission_deadline"
+        }
+      ],
+      "rationale": "REQ-TRIAGE-001 (SRC-TRIAGE-001-PRD, ACTIVE, authority: product_contract) states expiry when evaluated_at >= submission_deadline, which is an inclusive-boundary condition. The implementation at line 7 uses the strict operator '>' and therefore does not mark a submission as expired when evaluated_at equals submission_deadline exactly. This is a direct, documented mismatch at the inclusion/exclusion boundary. Domain rules classify this as BOUNDARY_CONDITION_DRIFT (most-specific type per policy). The severity rubric maps a confirmed deadline/eligibility boundary change to HIGH. The test suite exercises only the strictly-before and strictly-after cases; the equality boundary (evaluated_at == submission_deadline) has no acceptance test, corroborating the drift.",
+      "suggested_human_check": "Verify whether the intended operator is '>=' (inclusive, per REQ-TRIAGE-001) or '>' (exclusive). If '>=', fix implementation and add a test for the equality boundary."
+    },
+    {
+      "finding_id": "F-002",
+      "finding_class": "CONFIRMED_ISSUE",
+      "finding_type": "MISSING_ACCEPTANCE_TEST",
+      "title": "No test exercises the equality boundary evaluated_at == submission_deadline",
+      "severity": "MEDIUM",
+      "evidence_grade": "DIRECT",
+      "requirement_ids": [
+        "REQ-TRIAGE-001"
+      ],
+      "source_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-001/source.md",
+          "locator": "line:14",
+          "excerpt": "A submission is expired when evaluated_at >= submission_deadline."
+        }
+      ],
+      "repo_anchors": [
+        {
+          "artifact": "eval/fixtures/TRIAGE-001/tests.py",
+          "locator": "line:9-17",
+          "commit_sha": "5f8be04084ce306c8718942ea303a356adaab0c7",
+          "excerpt": "DeadlineTests: test_before_deadline_is_open, test_after_deadline_is_expired"
+        }
+      ],
+      "test_anchors": [],
+      "rationale": "REQ-TRIAGE-001 explicitly establishes an inclusion boundary at evaluated_at == submission_deadline ('>='). The test file contains only two cases: strictly before the deadline and strictly after the deadline. The equality boundary, which is the distinguishing point between '>=' and '>', is not exercised by any test. Per domain rule DR-007, an explicit acceptance boundary without a matching test warrants REVIEW_REQUIRED and MISSING_ACCEPTANCE_TEST classification. Severity MEDIUM per the rubric ('explicit acceptance scenario missing from tests').",
+      "suggested_human_check": "Add a test case where evaluated_at equals submission_deadline and assert the result is True (expired)."
+    }
+  ],
+  "human_override": null
+}
