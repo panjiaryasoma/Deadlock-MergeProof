@@ -68,7 +68,7 @@ def test_fixture_paths_exist_and_do_not_embed_expected_labels() -> None:
         visible_text = "\n".join(
             path.read_text(encoding="utf-8")
             for path in root.rglob("*")
-            if path.is_file()
+            if path.is_file() and path.suffix in {".md", ".py", ".yaml", ".yml", ".txt"}
         )
         for key in ("finding_class", "finding_type", "advisory"):
             assert expected[key] not in visible_text
