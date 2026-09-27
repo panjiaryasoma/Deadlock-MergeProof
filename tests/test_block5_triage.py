@@ -504,3 +504,60 @@ def test_successful_report_transport_is_raw_json_only() -> None:
         assert "code fence" in text.lower()
 
     assert "introductory sentence" in synthesis
+
+
+def test_prepare_recovers_interrupted_generated_workspace_without_marker(
+    tmp_path: Path,
+) -> None:
+    output_root = tmp_path / "triage"
+    partial = output_root / "TRIAGE-001"
+    (partial / "docs").mkdir(parents=True)
+    (partial / "eval").mkdir()
+    (partial / "schemas").mkdir()
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/prepare_triage_workspace.py",
+            "--case",
+            "TRIAGE-001",
+            "--output-root",
+            str(output_root),
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert (partial / ".mergeproof-triage-workspace").is_file()
+    assert (partial / "MERGEPROOF_RUN_CONTEXT.yaml").is_file()
+
+
+def test_prepare_refuses_markerless_workspace_with_unknown_content(
+    tmp_path: Path,
+) -> None:
+    output_root = tmp_path / "triage"
+    unsafe = output_root / "TRIAGE-001"
+    unsafe.mkdir(parents=True)
+    (unsafe / "do-not-delete.txt").write_text("user data\n", encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/prepare_triage_workspace.py",
+            "--case",
+            "TRIAGE-001",
+            "--output-root",
+            str(output_root),
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode != 0
+    assert "unexpected entries exist" in result.stderr
+    assert (unsafe / "do-not-delete.txt").is_file()
