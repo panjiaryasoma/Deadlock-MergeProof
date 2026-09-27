@@ -27,6 +27,47 @@ source_precedence:
     - REPOSITORY_DOCUMENTATION
     - ISSUE_OR_PR_TEXT
     - EXTERNAL_GUIDANCE
+finding_type_selection:
+  policy: "MOST_SPECIFIC_SUPPORTED_TYPE_WINS"
+  precedence:
+    - SOURCE_CONFLICT
+    - STALE_SOURCE
+    - MISSING_ACCEPTANCE_TEST
+    - BOUNDARY_CONDITION_DRIFT
+    - API_CONTRACT_DRIFT
+    - ENUM_OR_SCHEMA_DRIFT
+    - UNSUPPORTED_BEST_PRACTICE_CLAIM
+    - HARMLESS_REFACTOR
+    - REQUIREMENT_IMPLEMENTATION_MISMATCH
+  rules:
+    BOUNDARY_CONDITION_DRIFT:
+      when:
+        - "documented and implemented comparison operators differ at an inclusion/exclusion boundary"
+        - "deadline/equality boundary semantics differ while the governing requirement is otherwise clear"
+    API_CONTRACT_DRIFT:
+      when:
+        - "required/optional API fields, request/response shape, or explicit HTTP contract differs"
+    ENUM_OR_SCHEMA_DRIFT:
+      when:
+        - "documented enum, type, nullability, or schema constraint differs"
+    MISSING_ACCEPTANCE_TEST:
+      when:
+        - "an explicit acceptance boundary exists and inspected tests do not exercise it"
+    SOURCE_CONFLICT:
+      when:
+        - "applicable authoritative sources remain unresolved and conflict"
+    STALE_SOURCE:
+      when:
+        - "a superseded source is relevant to the evaluated change but is not authoritative"
+    UNSUPPORTED_BEST_PRACTICE_CLAIM:
+      when:
+        - "only external guidance supports the concern and no local requirement establishes a violation"
+    HARMLESS_REFACTOR:
+      when:
+        - "change evidence supports an internal refactor with unchanged public behavior"
+    REQUIREMENT_IMPLEMENTATION_MISMATCH:
+      when:
+        - "a requirement/implementation mismatch or ambiguity exists and no more specific finding type above applies"
 rules:
   - id: DR-001
     name: no_evidence_no_confirmed_issue

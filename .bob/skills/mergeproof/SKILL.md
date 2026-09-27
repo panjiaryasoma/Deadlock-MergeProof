@@ -44,7 +44,8 @@ Do not use evaluator or expected-output material.
 4. Inspect relevant tests with `test-acceptance-audit`.
 5. Optionally delegate independent read-only exploration to focused subagents.
    Delegation must not broaden scope or transfer advisory ownership.
-6. Classify candidate findings with `evidence-classification`.
+6. Classify candidate findings with `evidence-classification`, applying the
+   active most-specific finding-type policy.
 7. Apply deterministic project severity rules with `severity-impact`.
 8. Run `conflict-abstention` for the preliminary advisory state.
 9. Run `self-audit`.
@@ -65,8 +66,11 @@ Focused skills produce evidence and classifications.
 
 ## Successful final output
 
-Return exactly one JSON object conforming to
+Return exactly one raw JSON object conforming to
 `schemas/mergeproof_report.schema.json`.
+
+The response MUST start with `{` and end with `}`.
+Do not add any text before or after it and do not use Markdown code fences.
 
 Populate:
 - `report_version` from run-context `report_schema_version`;

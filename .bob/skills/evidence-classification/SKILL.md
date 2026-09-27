@@ -23,5 +23,31 @@ Use `SPEC_AMBIGUITY` when expected behavior cannot be resolved reliably.
 
 Use `NO_ISSUE` when evidence supports alignment or harmlessness within evaluated scope.
 
+## Finding-type selection
+
+Read `finding_type_selection` from
+`docs/03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml`.
+
+Apply `MOST_SPECIFIC_SUPPORTED_TYPE_WINS`.
+
+In particular:
+- exact inclusion/exclusion, equality, deadline, or comparison-operator drift is
+  `BOUNDARY_CONDITION_DRIFT`, not the generic
+  `REQUIREMENT_IMPLEMENTATION_MISMATCH`;
+- missing explicit acceptance coverage is `MISSING_ACCEPTANCE_TEST`;
+- API request/response contract drift is `API_CONTRACT_DRIFT`;
+- enum/type/nullability/schema drift is `ENUM_OR_SCHEMA_DRIFT`;
+- unresolved authoritative-source disagreement is `SOURCE_CONFLICT`;
+- explicit supersession/stale-source reasoning is `STALE_SOURCE`;
+- external-guidance-only concerns are `UNSUPPORTED_BEST_PRACTICE_CLAIM`;
+- evidenced behavior-preserving internal refactors are `HARMLESS_REFACTOR`.
+
+Use `REQUIREMENT_IMPLEMENTATION_MISMATCH` only as the generic fallback when no
+more-specific supported type applies.
+
+Do not collapse two independently supported issues into one finding merely because
+they share the same requirement. For example, a boundary implementation drift and a
+missing boundary test may be separate findings.
+
 Before handing a finding to report synthesis, ensure its class, type, evidence grade,
 severity, and anchors use only values and fields present in the canonical report contract.

@@ -55,13 +55,20 @@ Populate:
 Preserve project-specific `source.authority` strings exactly.
 Use workspace-root-relative artifact paths in anchors.
 
-## Final response
+## Final response transport contract
+
+The successful final response is raw JSON and nothing else.
+
+Mechanical requirements:
+- the first non-whitespace character MUST be `{`;
+- the last non-whitespace character MUST be `}`;
+- do not emit an introductory sentence;
+- do not emit a closing sentence;
+- do not wrap the object in ```json` or any Markdown code fence;
+- do not emit Markdown headings, bullets, workflow notes, self-audit notes,
+  source-resolution scratch state, or merge/approve/reject language.
 
 Return exactly one JSON object matching the canonical schema.
-
-Do not prepend or append Markdown, workflow notes, self-audit notes,
-source-resolution scratch state, unresolved-question prose outside canonical
-fields, or merge/approve/reject language.
 
 If a required report value cannot be grounded, do not invent it. This skill must
 not be invoked; the orchestrator reports a workflow setup error before final

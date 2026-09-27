@@ -1,10 +1,15 @@
 # Block 5 TRIAGE Acceptance Runbook
 
-Block 5 uses TRIAGE-001 through TRIAGE-008 with the pre-measurement consistency
-corrections documented in
-`docs/05_PREPRODUCTION/02_TRIAGE_ACCEPTANCE/FIXTURE_CONSISTENCY_CORRECTIONS.md`.
+Block 5 uses TRIAGE-001 through TRIAGE-008 with the documented consistency
+corrections.
+
+The final measured series uses MergeProof skill version `1.0.1`.
+The earlier TRIAGE-001 run under skill `1.0.0` is diagnostic-only and is documented in
+`BLOCK5_MEASUREMENT_RESTART_v1.0.1.md`.
 
 ## 1. Prepare all isolated workspaces
+
+After pulling the latest repo, regenerate all workspaces once:
 
 ```bash
 git pull
@@ -12,36 +17,31 @@ uv sync --locked --dev
 uv run python scripts/prepare_triage_workspace.py --all
 ```
 
-This creates:
+Verify each generated `MERGEPROOF_RUN_CONTEXT.yaml` records:
 
-```text
-build/triage/TRIAGE-001
-...
-build/triage/TRIAGE-008
+```yaml
+skill_version: "1.0.1"
 ```
 
-Each workspace contains only:
-- MergeProof Bob configuration;
-- the selected analysis fixture;
-- its canonical source registry;
-- optional change evidence when the scenario requires it;
-- active domain/schema/output contracts;
-- per-run provenance.
+This creates `build/triage/TRIAGE-001` through `TRIAGE-008`.
 
-Evaluator ground truth under `eval/expected/` is not copied.
+Each workspace contains only the MergeProof Bob configuration, selected analysis
+fixture, canonical source registry, optional change evidence, active contracts, and
+per-run provenance. Evaluator ground truth is not copied.
 
 ## 2. Execute IBM Bob once per case
 
 For each case:
 
-1. Open `build/triage/<CASE_ID>` in IBM Bob.
+1. Open only `build/triage/<CASE_ID>` in IBM Bob.
 2. Activate the `MergeProof` mode.
 3. Invoke the `mergeproof` skill.
-4. Capture the final JSON exactly as emitted.
-5. Save it outside Bob verification mode as `reports/triage/<CASE_ID>.json`.
+4. Capture the successful final response exactly as emitted.
+5. The response must be raw JSON: first non-whitespace character `{`, last
+   non-whitespace character `}`, no prose and no code fence.
+6. Save it outside Bob verification mode as `reports/triage/<CASE_ID>.json`.
 
-Do not inspect `eval/expected/<CASE_ID>.yaml` until that case's Bob response has
-already been captured.
+Do not inspect `eval/expected/<CASE_ID>.yaml` while producing the Bob response.
 
 ## 3. Evaluate one case
 
@@ -51,32 +51,21 @@ uv run python scripts/evaluate_triage_report.py \
   --report reports/triage/TRIAGE-001.json
 ```
 
-The evaluator checks:
-- Block 2 structural and semantic validity;
-- run provenance;
-- exact registered source-ID set;
-- source type/state/authority/scope/supersession/location against the source registry;
-- expected advisory;
-- frozen expected finding class/type/severity tuple;
-- source anchors point to registered source locations;
-- repository anchors stay in evaluated changed-file scope;
-- anchor locators resolve against their artifacts;
-- source-conflict findings cite both active sides;
-- cited artifacts exist inside the isolated workspace.
+The evaluator checks Block 2 validity, run provenance, exact source governance,
+expected advisory and finding tuple, anchor roles/locators, conflict evidence, and
+artifact existence.
 
 ## 4. Evaluate all eight
-
-After all reports are captured:
 
 ```bash
 uv run python scripts/run_triage_acceptance.py
 ```
 
-Block 5 final acceptance requires:
+Final Block 5 acceptance requires:
 
 ```text
 passed=8 failed=0 pending=0 total=8
 ```
 
 GitHub Actions verifies the corpus, preparation tooling, and deterministic evaluator.
-It does not execute IBM Bob, so CI success alone is not an 8/8 TRIAGE result.
+It does not execute IBM Bob.

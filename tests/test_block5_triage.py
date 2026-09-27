@@ -217,7 +217,7 @@ def test_prepare_all_triage_workspaces_hides_ground_truth(tmp_path: Path) -> Non
         assert context["source_ids"]
         assert context["source_registry"]
         assert context["bob_mode_version"] == "1.0.0"
-        assert context["skill_version"] == "1.0.0"
+        assert context["skill_version"] == "1.0.1"
         assert context["report_schema_version"] == "1.0"
         assert (workspace / context["source_registry"]).is_file()
 
@@ -470,3 +470,37 @@ def test_change_evidence_is_allowed_as_relevant_repo_anchor(tmp_path: Path) -> N
 
     assert "REPO_ANCHOR_OUTSIDE_EVALUATED_SCOPE" not in codes
     assert "ANCHOR_LOCATOR_UNRESOLVED" not in codes
+
+
+def test_finding_type_policy_prefers_specific_boundary_drift() -> None:
+    rules = _load_yaml(
+        REPO_ROOT / "docs/03_EVALUATION_AND_DOMAIN_RULES/domain_rules_v1.0.yaml"
+    )
+    policy = rules["finding_type_selection"]
+
+    assert policy["policy"] == "MOST_SPECIFIC_SUPPORTED_TYPE_WINS"
+    assert policy["precedence"].index("BOUNDARY_CONDITION_DRIFT") < policy[
+        "precedence"
+    ].index("REQUIREMENT_IMPLEMENTATION_MISMATCH")
+    assert "comparison-operator drift" in " ".join(
+        policy["rules"]["BOUNDARY_CONDITION_DRIFT"]["when"]
+    )
+    assert "fallback" in " ".join(
+        policy["rules"]["REQUIREMENT_IMPLEMENTATION_MISMATCH"]["when"]
+    )
+
+
+def test_successful_report_transport_is_raw_json_only() -> None:
+    synthesis = (
+        REPO_ROOT / ".bob/skills/report-synthesis/SKILL.md"
+    ).read_text(encoding="utf-8")
+    orchestrator = (
+        REPO_ROOT / ".bob/skills/mergeproof/SKILL.md"
+    ).read_text(encoding="utf-8")
+
+    for text in (synthesis, orchestrator):
+        assert "start with" in text.lower()
+        assert "end with" in text.lower()
+        assert "code fence" in text.lower()
+
+    assert "introductory sentence" in synthesis
