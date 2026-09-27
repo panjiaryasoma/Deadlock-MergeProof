@@ -1,0 +1,21 @@
+case_id: TRIAGE-007
+skill_version: "1.0.2"
+measurement_status: FAIL
+transport_contract:
+  pass: true
+expected:
+  finding_class: POTENTIAL_RISK
+  finding_type: UNSUPPORTED_BEST_PRACTICE_CLAIM
+  severity: MEDIUM
+  advisory: REVIEW_REQUIRED
+observed_matching_finding:
+  finding_class: POTENTIAL_RISK
+  finding_type: UNSUPPORTED_BEST_PRACTICE_CLAIM
+  severity: MEDIUM
+observed_advisory: PASS
+failure:
+  code: ADVISORY_MISMATCH
+  reason: "The expected risk finding is present, but the report-level advisory is PASS instead of REVIEW_REQUIRED."
+notes:
+  - "External guidance was not promoted to a local requirement violation."
+  - "The finding cites both project evidence and external guidance as required."
