@@ -12,6 +12,9 @@ dependencies = [
 [project.scripts]
 mergeproof = "mergeproof.cli:main"
 
+[tool.uv]
+package = true
+
 [dependency-groups]
 dev = [
     "pytest>=8.3,<9",
