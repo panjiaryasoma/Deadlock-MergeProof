@@ -3,9 +3,9 @@
 Block 5 uses TRIAGE-001 through TRIAGE-008 with the documented consistency
 corrections.
 
-The final measured series uses MergeProof skill version `1.0.1`.
+The final measured series uses MergeProof skill version `1.0.2`.
 The earlier TRIAGE-001 run under skill `1.0.0` is diagnostic-only and is documented in
-`BLOCK5_MEASUREMENT_RESTART_v1.0.1.md`.
+`BLOCK5_MEASUREMENT_RESTART_v1.0.2.md`.
 
 ## 1. Prepare all isolated workspaces
 
@@ -20,7 +20,7 @@ uv run python scripts/prepare_triage_workspace.py --all
 Verify each generated `MERGEPROOF_RUN_CONTEXT.yaml` records:
 
 ```yaml
-skill_version: "1.0.1"
+skill_version: "1.0.2"
 ```
 
 This creates `build/triage/TRIAGE-001` through `TRIAGE-008`.

@@ -217,7 +217,7 @@ def test_prepare_all_triage_workspaces_hides_ground_truth(tmp_path: Path) -> Non
         assert context["source_ids"]
         assert context["source_registry"]
         assert context["bob_mode_version"] == "1.0.0"
-        assert context["skill_version"] == "1.0.1"
+        assert context["skill_version"] == "1.0.2"
         assert context["report_schema_version"] == "1.0"
         assert (workspace / context["source_registry"]).is_file()
 
@@ -561,3 +561,22 @@ def test_prepare_refuses_markerless_workspace_with_unknown_content(
     assert result.returncode != 0
     assert "unexpected entries exist" in result.stderr
     assert (unsafe / "do-not-delete.txt").is_file()
+
+
+def test_custom_mode_forbids_user_visible_workflow_narration() -> None:
+    mode = (
+        REPO_ROOT / ".bob/custom_modes.yaml"
+    ).read_text(encoding="utf-8")
+    rule = (
+        REPO_ROOT / ".bob/rules-mergeproof/07-final-output-transport.md"
+    ).read_text(encoding="utf-8")
+
+    for text in (mode, rule):
+        lowered = text.lower()
+        assert "intermediate" in lowered
+        assert "raw json" in lowered
+        assert "code fence" in lowered
+
+    assert "never narrate stage headings" in mode
+    assert "first non-whitespace character" in mode
+    assert "progress messages" in rule

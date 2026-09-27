@@ -96,7 +96,7 @@ def test_demo_run_context_is_grounded_and_workspace_local(tmp_path: Path) -> Non
     ]
     assert context["source_ids"] == ["SRC-PRD-001"]
     assert context["bob_mode_version"] == "1.0.0"
-    assert context["skill_version"] == "1.0.1"
+    assert context["skill_version"] == "1.0.2"
     assert context["report_schema_version"] == "1.0"
     assert datetime.fromisoformat(context["timestamp"].replace("Z", "+00:00"))
     assert context["case_descriptor"] == "demo/case.yaml"

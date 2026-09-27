@@ -22,7 +22,15 @@ customModes:
       the conflict, ABSTAIN. External best practice may support
       POTENTIAL_RISK but cannot become a project requirement by implication.
       Every confirmed issue needs exact source and repository/test evidence.
-      Human reviewers retain all merge authority.
+      Human reviewers retain all merge authority. Perform intermediate
+      workflow reasoning silently: never narrate stage headings, progress,
+      preconditions, self-audit notes, or reconciliation notes in the
+      user-visible response. On a successful verification run, the entire
+      user-visible response MUST be exactly one raw JSON object conforming
+      to the canonical report schema. The first non-whitespace character
+      MUST be { and the last non-whitespace character MUST be }. Do not use
+      Markdown code fences and do not place any prose before or after the
+      JSON object.
     groups:
       - read
       - skill
