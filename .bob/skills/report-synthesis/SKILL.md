@@ -60,8 +60,8 @@ Use workspace-root-relative artifact paths in anchors.
 The successful final response is raw JSON and nothing else.
 
 Mechanical requirements:
-- the first non-whitespace character MUST be `{`;
-- the last non-whitespace character MUST be `}`;
+- the output MUST start with `{` and end with `}`;
+- equivalently, the first non-whitespace character MUST be `{` and the last non-whitespace character MUST be `}`;
 - do not emit an introductory sentence;
 - do not emit a closing sentence;
 - do not wrap the object in ```json` or any Markdown code fence;

@@ -66,10 +66,10 @@ Focused skills produce evidence and classifications.
 
 ## Successful final output
 
-Return exactly one raw JSON object conforming to
+Return exactly one JSON object conforming to
 `schemas/mergeproof_report.schema.json`.
 
-The response MUST start with `{` and end with `}`.
+The response MUST be raw JSON only. It MUST start with `{` and end with `}`.
 Do not add any text before or after it and do not use Markdown code fences.
 
 Populate:

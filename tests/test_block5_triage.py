@@ -482,7 +482,7 @@ def test_finding_type_policy_prefers_specific_boundary_drift() -> None:
     assert policy["precedence"].index("BOUNDARY_CONDITION_DRIFT") < policy[
         "precedence"
     ].index("REQUIREMENT_IMPLEMENTATION_MISMATCH")
-    assert "comparison-operator drift" in " ".join(
+    assert "comparison operators differ" in " ".join(
         policy["rules"]["BOUNDARY_CONDITION_DRIFT"]["when"]
     )
     assert "fallback" in " ".join(
