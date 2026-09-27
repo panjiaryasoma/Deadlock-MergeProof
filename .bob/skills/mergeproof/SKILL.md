@@ -7,22 +7,36 @@ description: Orchestrate a conservative read-only pre-merge verification from ex
 
 Use this skill for the complete MergeProof evidence workflow.
 
-## Inputs
+## Run provenance gate
 
-For the seeded/demo workflow:
+Read `MERGEPROOF_RUN_CONTEXT.yaml` first.
 
-1. Read `MERGEPROOF_RUN_CONTEXT.yaml` when present.
-2. Read the case descriptor named by `case_descriptor`.
-3. Treat all paths in the case descriptor as workspace-root-relative.
-4. Use `source_files` as the candidate source inventory.
-5. Use `changed_files` as the exact requested change scope.
+Before analysis, require:
+- `run_id`
+- `repository_commit_sha`
+- `changed_files`
+- `source_ids`
+- `bob_mode_version`
+- `skill_version`
+- `timestamp`
+- `report_schema_version`
+
+Read the case descriptor named by `case_descriptor`.
+Treat all case paths as workspace-root-relative.
+Use `source_files` as the candidate source inventory and `changed_files` as
+the exact requested change scope.
+
+Read `output_contract_addendum` when present.
+
+If required run provenance is missing, stop before report synthesis and surface
+a workflow setup error. Do not fabricate a canonical report.
 
 Do not inspect files outside the opened workspace.
-Do not use evaluator or expected-output material even if it is mentioned elsewhere.
+Do not use evaluator or expected-output material.
 
 ## Evidence workflow
 
-1. Resolve relevant source lifecycle, scope, supersession, and authority with `source-authority`.
+1. Resolve source lifecycle, scope, supersession, and authority with `source-authority`.
 2. Extract applicable atomic requirements with `requirement-trace`.
 3. Inspect changed implementation with `implementation-observation`.
 4. Inspect relevant tests with `test-acceptance-audit`.
@@ -36,51 +50,34 @@ Do not use evaluator or expected-output material even if it is mentioned elsewhe
     `conflict-abstention` again using corrected evidence.
 11. Run `report-synthesis` using the latest advisory state.
 
-## Evidence boundaries
+Keep documented expected behavior, observed implementation, observed test
+coverage, authority resolution, engineering opinion, and unresolved uncertainty
+separate until classification.
 
-Keep these separate throughout the workflow:
-
-- documented expected behavior;
-- observed implementation behavior;
-- observed test coverage;
-- source authority resolution;
-- engineering opinion;
-- unresolved uncertainty.
-
-A passing test is evidence about tested behavior, not proof that the requirement is correct.
-
-## Ownership rules
+## Ownership
 
 Focused skills produce evidence and classifications.
-They do not decide ABSTAIN.
-
-`conflict-abstention` is the single owner of the advisory decision.
-
-`self-audit` may retract or revise claims, but does not choose the advisory.
-
+`conflict-abstention` is the single advisory decision point.
+`self-audit` may revise claims but does not choose the advisory.
 `report-synthesis` carries forward the latest advisory and never recomputes it.
 
-## Final output
+## Successful final output
 
-The final user-visible output of this skill is exactly one JSON object conforming to:
-
-`schemas/mergeproof_report.schema.json`
-
-The frozen design authority remains:
-
-`docs/05_PREPRODUCTION/01_CONTRACTS_ACTIVE/FEATURE_SCHEMA_FINAL.yaml`
-
-Do not add analysis-only scratch fields to the final report.
-Do not emit a Markdown summary before or after the JSON report.
+Return exactly one JSON object conforming to
+`schemas/mergeproof_report.schema.json`.
 
 Populate:
-- `repository.commit_sha` from `MERGEPROOF_RUN_CONTEXT.yaml`;
-- `repository.changed_files` from the case descriptor;
+- `report_version` from run-context `report_schema_version`;
+- `run_id` from run context;
+- `repository.commit_sha` from `repository_commit_sha`;
+- `repository.changed_files` from run-context `changed_files`;
 - source fields from inspected source metadata;
 - requirements only from documented source text;
-- finding anchors using workspace-root-relative artifact paths;
-- `generated_at` as the actual run timestamp.
+- anchors with workspace-root-relative artifact paths;
+- `generated_at` from run-context `timestamp`.
+
+During Blocks 4 through 6 do not append a Markdown summary. The active output
+addendum assigns the FR-014 summary to Block 7 after deterministic validation.
 
 Never invent a required report value merely to satisfy the schema.
-
 Do not write files.
