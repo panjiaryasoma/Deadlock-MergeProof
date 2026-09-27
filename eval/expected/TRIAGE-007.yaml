@@ -1,0 +1,8 @@
+case_id: TRIAGE-007
+expected:
+  finding_class: POTENTIAL_RISK
+  finding_type: UNSUPPORTED_BEST_PRACTICE_CLAIM
+  severity: MEDIUM
+  advisory: REVIEW_REQUIRED
+mutation_operator: null
+scenario_role: risk_control

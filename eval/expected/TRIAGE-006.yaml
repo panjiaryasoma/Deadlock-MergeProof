@@ -1,0 +1,8 @@
+case_id: TRIAGE-006
+expected:
+  finding_class: SPEC_AMBIGUITY
+  finding_type: SOURCE_CONFLICT
+  severity: NONE
+  advisory: ABSTAIN
+mutation_operator: MUT-CONFLICT
+scenario_role: ambiguity_control

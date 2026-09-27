@@ -1,0 +1,8 @@
+case_id: TRIAGE-001
+source_files:
+  - eval/fixtures/TRIAGE-001/source.md
+changed_files:
+  - eval/fixtures/TRIAGE-001/implementation.py
+  - eval/fixtures/TRIAGE-001/tests.py
+application_entrypoint: eval/fixtures/TRIAGE-001/implementation.py
+test_command: python eval/fixtures/TRIAGE-001/tests.py

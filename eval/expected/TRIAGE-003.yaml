@@ -1,0 +1,8 @@
+case_id: TRIAGE-003
+expected:
+  finding_class: NO_ISSUE
+  finding_type: HARMLESS_REFACTOR
+  severity: NONE
+  advisory: PASS
+mutation_operator: MUT-NOOP
+scenario_role: clean_control

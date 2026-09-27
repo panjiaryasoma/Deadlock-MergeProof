@@ -1,0 +1,8 @@
+case_id: TRIAGE-004
+expected:
+  finding_class: SPEC_AMBIGUITY
+  finding_type: REQUIREMENT_IMPLEMENTATION_MISMATCH
+  severity: NONE
+  advisory: ABSTAIN
+mutation_operator: null
+scenario_role: ambiguity_control

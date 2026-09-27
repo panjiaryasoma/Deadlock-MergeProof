@@ -1,0 +1,8 @@
+case_id: TRIAGE-005
+expected:
+  finding_class: CONFIRMED_ISSUE
+  finding_type: MISSING_ACCEPTANCE_TEST
+  severity: MEDIUM
+  advisory: REVIEW_REQUIRED
+mutation_operator: MUT-MISSING-TEST
+scenario_role: seeded_defect

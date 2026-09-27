@@ -1,0 +1,8 @@
+case_id: TRIAGE-001
+expected:
+  finding_class: CONFIRMED_ISSUE
+  finding_type: BOUNDARY_CONDITION_DRIFT
+  severity: HIGH
+  advisory: REVIEW_REQUIRED
+mutation_operator: MUT-BOUNDARY
+scenario_role: seeded_defect

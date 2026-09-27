@@ -1,0 +1,8 @@
+case_id: TRIAGE-008
+expected:
+  finding_class: NO_ISSUE
+  finding_type: STALE_SOURCE
+  severity: NONE
+  advisory: PASS
+mutation_operator: MUT-STALE-SOURCE
+scenario_role: supersession_control
