@@ -28,6 +28,8 @@ for legal report values.
 2. If no exact rule applies, use the severity rubric in that same file.
 3. If neither path resolves severity deterministically, do not guess.
 
+Hidden TRIAGE acceptance fixtures are not required for severity resolution; measured workspaces rely on the active domain rules above.
+
 This keeps ambiguity/source-conflict and unsupported-best-practice severity
 resolution inside one active rule source rather than scattering it across skills
 or hidden acceptance fixtures.
